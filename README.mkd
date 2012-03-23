@@ -1,0 +1,6 @@
+CIS 598 Senior Project
+==========================
+
+This is the readme for my repo. If you would like more information on this project, please visit the official website for it.
+
+* http://people.cis.ksu.edu/~bccain/cis598.html
