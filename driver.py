@@ -16,39 +16,53 @@ import node, time, sys
 #######################################
 
 def main() :
-  print "We're in main!\n\n"
-  print "##########################"
+  print "###############################"
   print "CIS 598: Senior Project\nDemo Programmed by: Brian Cain"
-  print "##########################\n\n"
+  print "###############################\n\n"
 
-  x, y, z = init_Node() # Get node objects
+  x, y1, y2, z = init_Node() # Get node objects
+  inter_nodes = [y1, y2]
 
   print "\n"
   print "Source Node ID: ", x.who_am_i()
-  print "Intermediate Node ID: ", y.who_am_i()
-  print "Destination Node ID: ", z.who_am_i()
+  print "Source Node Neighbor List: ",
+  for ids in x.neighbor_list :
+    print ids.msg_DHT_ID,
+
+  print "\n\nIntermediate Node ID: ", y1.who_am_i()
+  print "o----------> Destination: ", y1.request_id
+  print "\nIntermediate Node ID: ", y2.who_am_i()
+  print "o----------> Destination: ", y2.request_id
+  print "\nDestination Node ID: ", z.who_am_i()
   print "\n"
 
 
   go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
-    x.flood()
+    for x1 in x.neighbor_list :
+      x.flood(x1)
 
+#######################################
+# Initalize nodes
+#######################################
 def init_Node() :
   print "Initializing nodes:"
   char = "............................"
   dot_load(char)
   print "\n"
   load()
-  x = node.node_Source()
+  x = node.node_Source(1)
   load()
-  y = node.node_Int(11, x.msg_DHT_ID) # request ID and source ID
+  y1 = node.node_Int(3, 11, x.msg_DHT_ID) # request ID and source ID
   load()
-  z = node.node_Dest(4, "pref", None, 2)
-  return x, y, z
+  y2 = node.node_Int(5, 11, x.msg_DHT_ID)
+  load()
+  z = node.node_Dest(11)
+  x.neighbor_list = [y1, y2]
+  return x, y1, y2, z
 
 ##############################################################################
-# Gives the illusion that things are loading for presentation
+# Gives the illusion that things are loading for presentationi 2! ;)
 # Code referenced : http://www.stealth-x.com/articles/python-code-tricks.php
 ##############################################################################
 def dot_load(ch):
