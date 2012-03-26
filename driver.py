@@ -39,17 +39,19 @@ def main() :
 
   go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
+    string = "Flooding network..........\n\n"
+    dot_load(string)
     for x1 in x.neighbor_list :
-      x.flood(x1)
+      flag = x.flood(x1)
+      if not flag :
+        que = x1.flood(x1.neighbor_list)
 
 #######################################
 # Initalize nodes
 #######################################
 def init_Node() :
-  print "Initializing nodes:"
-  char = "............................"
-  dot_load(char)
-  print "\n"
+  string =  "Initializing nodes....\n"
+  dot_load(string)
   load()
   x = node.node_Source(1)
   load()
@@ -59,6 +61,9 @@ def init_Node() :
   load()
   z = node.node_Dest(11)
   x.neighbor_list = [y1, y2]
+  y1.neighbor_list = z
+  y2.neighbor_list = z
+
   return x, y1, y2, z
 
 ##############################################################################

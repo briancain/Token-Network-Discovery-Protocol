@@ -1,5 +1,4 @@
-import Queue
-import random
+import Queue, random
 
 ###############################################################
 
@@ -24,7 +23,14 @@ def am_I_the_node(msg_DHT_ID):
 
 # flooding network will probably be pushed do different function later
 def flood_network(source) :
-  print "Flood ID: ", source.msg_DHT_ID
+  print "# Flood ID: ", source.msg_DHT_ID
+  if am_I_the_node(source.msg_DHT_ID) :
+    print "Destination node found!"
+    q = source.check_node()
+    return q
+  else :
+    print "# Not destination node\n"
+    return False
 
   return None
 
@@ -46,9 +52,9 @@ class node_Source:
     self.prt = dict([]) # of the form [('me': d, z), ('me': y, w),...] after initialized (dictionary)
 
 # Membership & Invitation Authority will initiate flooding technique
-  def flood(self, neigh):
-    print "\nFlooding network...."
-    self.prt = flood_network(neigh) # this function will probably return the routing tables
+  def flood(self, source):
+    flag = flood_network(source) # this function will probably return the routing tables
+    return flag
 
   def who_am_i(self):
     return self.msg_DHT_ID
@@ -66,6 +72,7 @@ class node_Int:
     self.prt = dict([('1', [2,3,4])]) # example of private route token being sent back
     self.request_id = req_id # Request ID
     self.source = source # source of request, must keep all
+    self.neighbor_list = []
 
     # generate padded queue
     #for i in range(7):
@@ -75,6 +82,12 @@ class node_Int:
     # adds self to route
     queue_route.put(self.msg_DHT_ID)
     return queue_route
+
+  def flood(self, source) :
+    temp_q = Queue.Queue()
+    temp_q = flood_network(source)
+    temp_q.put(self.msg_DHT_ID)
+    return temp_q
 
   def who_am_i(self):
     return self.msg_DHT_ID
@@ -89,17 +102,14 @@ class node_Dest:
     self.msg_DHT_ID = dht_id # dummy value for ID'
     self.prt = dict([('1', [2,3,4])]) # example prt to send back
 
-  def check_node(self, msg_queue) :
+  def check_node(self) :
     # if this is the node we are looking for....
-    if am_I_the_node(self.msg_DHT_ID):
-      print "You are the winner!"
-      # since Dest node can decrypt msg, generate DH half-key and compose response
-      # message = [self.msg_DHT_ID, self.prt, msg_queue] # then place on Queue?
-      q = Queue.Queue()
-      q.put(msg_DHT_ID)
-      return q # returning a response message
-    else :
-      print "These are not the nodes you are looking for"
+    print "You are the winner!\n"
+    # since Dest node can decrypt msg, generate DH half-key and compose response
+    # message = [self.msg_DHT_ID, self.prt, msg_queue] # then place on Queue?
+    q = Queue.Queue()
+    q.put(self.msg_DHT_ID)
+    return q # returning a response message
 
   def who_am_i(self):
     return self.msg_DHT_ID
