@@ -67,7 +67,7 @@ def init_Node() :
   return x, y1, y2, z
 
 ##############################################################################
-# Gives the illusion that things are loading for presentationi 2! ;)
+# Gives the illusion that things are loading for presentation 2! ;)
 # Code referenced : http://www.stealth-x.com/articles/python-code-tricks.php
 ##############################################################################
 def dot_load(ch):
