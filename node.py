@@ -41,7 +41,7 @@ class node_Source:
   def __init__(self, dht_id):
     print "      Source node initialized!"
     self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later
-    self.scope = 6 # flood depth, is this given?
+    self.scope = 2 # flood depth, is this given?
     z = random.randint(1, 10) # random number
     R = 0 # R is route descriptor, will be random bit-string of some fixed size later
     self.IBE_prefix = [z, R] 
