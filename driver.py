@@ -23,42 +23,24 @@ def main() :
   x, y1, y2, z = init_Node() # Get node objects
   inter_nodes = [y1, y2]
 
-  print "\n"
-  print "Source Node ID: ", x.who_am_i()
-  print "Source Node Neighbor List: ",
-  for ids in x.neighbor_list :
-    print ids.msg_DHT_ID,
-
-  print "\n\nIntermediate Node ID: ", y1.who_am_i()
-  print "o----------> Destination: ", y1.request_id
-  print "\nIntermediate Node ID: ", y2.who_am_i()
-  print "o----------> Destination: ", y2.request_id
-  print "\nDestination Node ID: ", z.who_am_i()
-  print "\n"
-
+  print "Nodes initialized"
 
   go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
-    string = "Flooding network..........\n\n"
-    dot_load(string)
+    print "Flooding network..........\n\n"
     for x1 in x.neighbor_list :
-      flag = x.flood(x1)
-      if not flag :
-        que = x1.flood(x1.neighbor_list)
+      x.flood(x1)
+      #if not flag :
+       # que = x1.flood(x1.neighbor_list)
 
 #######################################
 # Initalize nodes
 #######################################
 def init_Node() :
-  string =  "Initializing nodes....\n"
-  dot_load(string)
-  load()
+  print "Initializing nodes....\n"
   x = node.node_Source(1)
-  load()
   y1 = node.node_Int(3, 11, x.msg_DHT_ID) # request ID and source ID
-  load()
   y2 = node.node_Int(5, 11, x.msg_DHT_ID)
-  load()
   z = node.node_Dest(11)
   x.neighbor_list = [y1, y2]
   y1.neighbor_list = z
