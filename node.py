@@ -18,7 +18,7 @@ import Queue, random
 
 # simple def for checking if dest is right node (for now...)
 def am_I_the_node(msg_DHT_ID):
-  if msg_DHT_ID == 11:
+  if msg_DHT_ID == 6:
     return True
 
 # flooding network will probably be pushed do different function later
@@ -56,19 +56,22 @@ class node_Source:
   def who_am_i(self):
     return self.msg_DHT_ID
 
+  def set_neighbors(self, neigh_list):
+    self.neighbor_list = neigh_list
+
 ############################################################
 # Intermediate Node class
 # - Will pad route token with queue
 # - Cannot decrypt route discovery request, so intermediate
 ############################################################
 class node_Int:
-  def __init__(self, dht_id, req_id, source) :
+  def __init__(self, dht_id, req_id) :
     print "Intermediate node initialized!"
     self.msg_DHT_ID = dht_id # place holder value for now
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.hasht = dict([]) # keeps track of what has not been dealt with
     self.request_id = req_id # Request ID
-    self.source = source # source of request, must keep all
+    # self.source = source # source of request, must keep all
     self.neighbor_list = []
 
     # generate padded queue
@@ -88,6 +91,9 @@ class node_Int:
   def who_am_i(self):
     return self.msg_DHT_ID
 
+  def set_neighbors(self, neigh_list):
+    self.neighbor_list = neigh_list
+
 ##############################################################################
 # Destination node, going to be asked if it's correct node in flooding
 # algorithm
@@ -105,3 +111,6 @@ class node_Dest:
 
   def who_am_i(self):
     return self.msg_DHT_ID
+
+  def set_neighbors(self, neigh_list):
+    self.neighbor_list = neigh_list
