@@ -1,0 +1,19 @@
+Networking
+===============
+
+This is some example code for using sockets in python in the future for this project. It is mostly just messing around with networking.
+
+Server/Client
+---------------------
+
+First run the server so it can start listening, then run the client so it can send its message
+
+Run Server:
+
+    python ./server.py
+
+Run Client:
+
+    python client.py
+
+

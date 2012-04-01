@@ -22,7 +22,7 @@ def am_I_the_node(msg_DHT_ID):
     return True
 
 # flooding network will probably be pushed do different function later
-def flood_network(source) :
+"""def flood_network(source) :
   # needs to be changed for who am i node function
   print "# Flood ID: ", source.msg_DHT_ID
   if am_I_the_node(source.msg_DHT_ID) :
@@ -34,23 +34,28 @@ def flood_network(source) :
     return False
 
   return None
+"""
+
+def flood_network(neighbor_list):
+  for n in neighbor_list:
+    pass
+  pass
 
 ############################################
 # Source node, responsible for flooding
 ############################################
 class node_Source:
   def __init__(self, dht_id):
-    print "Source node initialized!"
     self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later
     self.scope = 2 # flood depth
     # Can only talk to neighbors (Array/List of DHT keys)
-    self.neighbor_list = [] # Just an example for now, list with DHT key
-    # Private routing Token -> An array of token strings which is built after flooding, which will be padded with the queue
+    self.neighbor_list = [] # Just an example for now, list with node neighbors
+    # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
     self.private_route_q = Queue.Queue() # queue for holding private route tokens, form [[x,y,z],...]
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self, source):
-    route_token = flood_network(source) # this function will probably return the routing tables
+    route_token = flood_network(source) 
     self.private_route_q.put(route_token)
 
   def who_am_i(self):
@@ -66,10 +71,10 @@ class node_Source:
 ############################################################
 class node_Int:
   def __init__(self, dht_id, req_id) :
-    print "Intermediate node initialized!"
     self.msg_DHT_ID = dht_id # place holder value for now
     # Needs to be a hash table (key=DHT ID, value =routing token)
-    self.hasht = dict([]) # keeps track of what has not been dealt with
+    self.dupe = dict([]) # hash table indexed by id and route
+    self.response = dict([])
     self.request_id = req_id # Request ID
     # self.source = source # source of request, must keep all
     self.neighbor_list = []
@@ -78,9 +83,21 @@ class node_Int:
     #for i in range(7):
     #  self.pad_q.put(None)
 
-  def send_message(self, route_id) :
+  def send_message(self, route_id, source) :
     # adds to dictionary for ids not dealth with
-    self.hasht['None'] = route_id
+    if route_id not in self.dupe:
+      # it's a duplicate -- do nothing
+      return
+
+    if route_id in self.response:
+      # reply to something we've seen before
+      # self.response[route_id] = return_hop
+      # forward_message to return_hop
+      pass
+    else :
+      responses[route_id] = source
+      source.scope = source.scope - 1
+      # forward_message to all neighbors who are not source
 
   def flood(self, source) :
     # generating routing token
@@ -100,7 +117,6 @@ class node_Int:
 ##############################################################################
 class node_Dest:
   def __init__(self, dht_id) :
-    print "Destination node initialized!"
     self.msg_DHT_ID = dht_id # dummy value for ID'
 
   def check_node(self) :
