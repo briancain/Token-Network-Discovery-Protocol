@@ -23,7 +23,8 @@ print >>sys.stderr
 try:
     
     # Send data
-    message = 'This is the message.  It will be repeated.'
+    msg = raw_input("Enter your message to send to the server: ")
+    message = msg
     print >>sys.stderr, 'sending "%s"' % message
     sock.sendall(message)
 
