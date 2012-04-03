@@ -80,6 +80,7 @@ def init_Node() :
 
 ##############################################################################
 # Gives the illusion that things are loading for presentation 2! ;)
+# Might be used later for when stuff takes a while to load
 # Code referenced : http://www.stealth-x.com/articles/python-code-tricks.php
 ##############################################################################
 def dot_load(ch):

@@ -1,4 +1,4 @@
-import Queue, random
+import Queue, random, hashlib
 
 ###############################################################
 
@@ -48,15 +48,22 @@ class node_Source:
   def __init__(self, dht_id):
     self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later
     self.scope = 2 # flood depth
+    self.gx = None # key/ignore
+    self.R = None # route descriptor
+    self.z = random.randint(1, 10) # random number
+    self.IBE = (self.z, self.R) # object to say if node is DHT node we're looking for
     # Can only talk to neighbors (Array/List of DHT keys)
     self.neighbor_list = [] # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
     self.private_route_q = Queue.Queue() # queue for holding private route tokens, form [[x,y,z],...]
+    self.token_dict = dict([]) # a dictionary of Queues
 
 # Membership & Invitation Authority will initiate flooding technique
-  def flood(self, source):
-    route_token = flood_network(source) 
-    self.private_route_q.put(route_token)
+  def flood(self):
+    disco_msg = (self.msg_DHT_ID, self.scope, self.gx, self.IBE)
+    print "Discovery Message: ", disco_msg
+    # route_token = flood_network(source) 
+    # self.private_route_q.put(route_token)
 
   def who_am_i(self):
     return self.msg_DHT_ID
@@ -83,7 +90,8 @@ class node_Int:
     #for i in range(7):
     #  self.pad_q.put(None)
 
-  def send_message(self, route_id, source) :
+  # discovery message, request ID and physical neighbor from disco_message
+  def send_message(self, disco_msg, route_id, source) :
     # adds to dictionary for ids not dealth with
     if route_id not in self.dupe:
       # it's a duplicate -- do nothing
@@ -96,7 +104,7 @@ class node_Int:
       pass
     else :
       responses[route_id] = source
-      source.scope = source.scope - 1
+      # decrease scope by 1
       # forward_message to all neighbors who are not source
 
   def flood(self, source) :
@@ -119,8 +127,19 @@ class node_Dest:
   def __init__(self, dht_id) :
     self.msg_DHT_ID = dht_id # dummy value for ID'
 
-  def check_node(self) :
+ # discovery message, request ID and physical neighbor from disco_message
+  def check_node(self, disco_msg, route_id, source) :
     # if this is the node we are looking for....
+    # target keeps track of z, prefix, route, and g^x
+    IBE = disco_msg[3]
+    z = IBE[0]
+    R = IBE[1]
+    scope = disco_msg[1]
+
+    # if scope is 0, drop message
+    if scope == 0 :
+      return
+
     print "You are the winner!\n"
     lst = [self.msg_DHT_ID]
     return lst # returning a response message
