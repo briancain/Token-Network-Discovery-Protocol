@@ -16,10 +16,17 @@ import Queue, random, hashlib
         - Merge nodes into one class
 """
 
-# simple def for checking if dest is right node (for now...)
-def am_I_the_node(msg_DHT_ID):
-  if msg_DHT_ID == 6:
-    return True
+
+ # call before figuring out which class I need to use
+  # during the flood
+#def am_I_the_node(self, msg):
+##CAN I DECRYPT THE NEXT ROUTE TOKEN?
+#    if msg[2][2] = self.DHT_ID: return True
+#    return False
+
+def am_I_the_dest(self, msg):
+  if msg[2][2] == 6 and 6 == self.DHT_ID: return True
+  return False
 
 # flooding network will probably be pushed do different function later
 """def flood_network(source) :
@@ -46,25 +53,25 @@ def flood_network(neighbor_list):
 ############################################
 class node_Source:
   def __init__(self, dht_id):
-    self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later using hashlib
+    self.DHT_ID =  dht_id # id of node
     self.scope = 8 # flood depth
-    self.R = None # route descriptor
-    self.z = random.randint(1, 10) # random number
-    self.IBE = (self.z, self.R) # object to say if node is DHT node we're looking for
+    self.R = Queue.Queue() # route descriptor
+    self.z = random.randint(1001, 1010) # random number
+    self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
     # Can only talk to neighbors (Array/List of DHT keys)
     self.neighbor_list = [] # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
-    self.private_route_q = Queue.Queue() # queue for holding private route tokens, form [[x,y,z],...]
-    self.token_dict = dict([]) # a dictionary of Queues
+    self.routing_table = dict() # a dictionary of Queues, key = dest id
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
-    disco_msg = (self.msg_DHT_ID, self.scope, self.IBE)
+    seq_numz = self.z + 10000
+    disco_msg = (seq_numz, self.scope, self.IBE)
     print "Discovery Message: ", disco_msg
     return disco_msg
 
   def who_am_i(self):
-    return self.msg_DHT_ID
+    return self.DHT_ID
 
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
@@ -76,10 +83,10 @@ class node_Source:
 ############################################################
 class node_Int:
   def __init__(self, dht_id, req_id) :
-    self.msg_DHT_ID = dht_id # place holder value for now
+    self.DHT_ID = dht_id # place holder value for now
     # Needs to be a hash table (key=DHT ID, value =routing token)
-    self.dupe = dict([]) # hash table indexed by id and route
-    self.response = dict([])
+    self.dupe = dict() # hash table indexed by id and route
+    self.response = dict()
     self.R = Queue.Queue()
     self.request_id = req_id # Request ID
     # self.source = source # source of request, must keep all
@@ -90,8 +97,19 @@ class node_Int:
       self.R.put(None)
 
   # discovery message, request ID and physical neighbor from disco_message
-  def send_message(self, disco_msg, route_id, source) :
+  def process_message(self, disco_msg, source) :
     # adds to dictionary for ids not dealth with
+
+    # implicit can I decrypt, if ID = 6
+    if am_I_the_node(disco_msg[2][2]):
+      return
+
+  # call before figuring out which class I need to use
+  # during the flood
+  def am_I_the_node(msg):
+    if msg[2][2] == self.DHT_ID: return True
+    return False
+
     if route_id not in self.dupe:
       # it's a duplicate -- do nothing
       return
@@ -124,7 +142,7 @@ class node_Int:
     return temp_list
 
   def who_am_i(self):
-    return self.msg_DHT_ID
+    return self.DHT_ID
 
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
@@ -135,7 +153,7 @@ class node_Int:
 ##############################################################################
 class node_Dest:
   def __init__(self, dht_id) :
-    self.msg_DHT_ID = dht_id # dummy value for ID'
+    self.DHT_ID = dht_id # dummy value for ID'
 
  # discovery message, request ID and physical neighbor from disco_message
   def check_node(self, disco_msg, route_id, source) :
@@ -153,7 +171,7 @@ class node_Dest:
     return lst # returning a response message
 
   def who_am_i(self):
-    return self.msg_DHT_ID
+    return self.DHT_ID
 
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
