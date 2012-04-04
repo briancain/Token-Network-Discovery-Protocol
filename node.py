@@ -46,9 +46,8 @@ def flood_network(neighbor_list):
 ############################################
 class node_Source:
   def __init__(self, dht_id):
-    self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later
-    self.scope = 2 # flood depth
-    self.gx = None # key/ignore
+    self.msg_DHT_ID =  dht_id # id of node, will be of form h(h(z)) later using hashlib
+    self.scope = 8 # flood depth
     self.R = None # route descriptor
     self.z = random.randint(1, 10) # random number
     self.IBE = (self.z, self.R) # object to say if node is DHT node we're looking for
@@ -60,10 +59,9 @@ class node_Source:
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
-    disco_msg = (self.msg_DHT_ID, self.scope, self.gx, self.IBE)
+    disco_msg = (self.msg_DHT_ID, self.scope, self.IBE)
     print "Discovery Message: ", disco_msg
-    # route_token = flood_network(source) 
-    # self.private_route_q.put(route_token)
+    return disco_msg
 
   def who_am_i(self):
     return self.msg_DHT_ID
@@ -82,13 +80,14 @@ class node_Int:
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.dupe = dict([]) # hash table indexed by id and route
     self.response = dict([])
+    self.R = Queue.Queue()
     self.request_id = req_id # Request ID
     # self.source = source # source of request, must keep all
     self.neighbor_list = []
 
     # generate padded queue
-    #for i in range(7):
-    #  self.pad_q.put(None)
+    for i in range(7):
+      self.R.put(None)
 
   # discovery message, request ID and physical neighbor from disco_message
   def send_message(self, disco_msg, route_id, source) :
@@ -106,6 +105,17 @@ class node_Int:
       responses[route_id] = source
       # decrease scope by 1
       # forward_message to all neighbors who are not source
+
+  def reply(self, route_request, scope):
+    # if it can decrypt route_request, generate gk-half key (ignore) and compose a response
+    ID_prime = None # seq_number_2
+
+    # R = FIFO queue with max entires
+    # each entry can read Null (None)
+    response = (ID_prime, R)
+    scope = scope - 1
+    # sends message to D, and "floods original request"
+    return response, scope
 
   def flood(self, source) :
     # generating routing token
@@ -130,17 +140,15 @@ class node_Dest:
  # discovery message, request ID and physical neighbor from disco_message
   def check_node(self, disco_msg, route_id, source) :
     # if this is the node we are looking for....
-    # target keeps track of z, prefix, route, and g^x
-    IBE = disco_msg[3]
-    z = IBE[0]
-    R = IBE[1]
-    scope = disco_msg[1]
+    # looks up table from previous request IDs
+    # finds the next hop, where response must be sent
 
     # if scope is 0, drop message
     if scope == 0 :
       return
 
     print "You are the winner!\n"
+    # constructs route token
     lst = [self.msg_DHT_ID]
     return lst # returning a response message
 

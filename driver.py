@@ -38,13 +38,14 @@ def init_Node() :
   print "Initializing nodes....\n"
   x = node.node_Source(1)
 
+  # request ID and source ID
   y2 = node.node_Int(2, 6)
   y3 = node.node_Int(3, 8)
   y4 = node.node_Int(4, 8)
   y5 = node.node_Int(5, 8)
   y7 = node.node_Int(7, 8)
   y9 = node.node_Int(9, 6)
-  y10 = node.node_Int(10, 6) # request ID and source ID
+  y10 = node.node_Int(10, 6) 
   y11 = node.node_Int(11, 6)
   y12 = node.node_Int(12, 6)
   y13 = node.node_Int(13, 8)
