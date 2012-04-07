@@ -38,38 +38,38 @@ def init_Node() :
   print "Initializing nodes....\n"
   x = node.node(1)
 
-  y2 = node.node(2)
-  y3 = node.node(3)
-  y4 = node.node(4)
-  y5 = node.node(5)
-  y6 = node.node(6)
-  y7 = node.node(7)
-  y8 = node.node(8)
-  y9 = node.node(9)
-  y10 = node.node(10) 
-  y11 = node.node(11)
-  y12 = node.node(12)
-  y13 = node.node(13)
-  y14 = node.node(14)
-  y15 = node.node(15)
+  x2 = node.node(2)
+  x3 = node.node(3)
+  x4 = node.node(4)
+  x5 = node.node(5)
+  x6 = node.node(6)
+  x7 = node.node(7)
+  x8 = node.node(8)
+  x9 = node.node(9)
+  x10 = node.node(10) 
+  x11 = node.node(11)
+  x12 = node.node(12)
+  x13 = node.node(13)
+  x14 = node.node(14)
+  x15 = node.node(15)
 
-  x.set_neighbors([y10, y11, y15, y2]) # 1: [10, 11, 15, 2]
-  y2.set_neighbors([x, y15, y14, y3]) # 2: [1, 15, 14, 3]
-  y3.set_neighbors([y2, y14, y5, y4]) # 3: [2, 14, 5, 4]
-  y4.set_neighbors([y3, y14, y5, y6]) # 4: [3, 14, 15, 6]
-  y5.set_neighbors([y14, y3, y4, y6]) # 5: [14, 3, 4, 6]
-  y6.set_neighbors([y4, y5, y13, y7]) # 6: [4, 5, 13, 7]
-  y7.set_neighbors([y6, y13, y8, y12]) # 7: [6, 13, 8, 12]
-  y8.set_neighbors([y7, y13, y12, y9]) # 8: [7, 13, 12, 9]
-  y9.set_neighbors([y10, y11, y12, y8]) # 9: [10, 11, 12, 8]
-  y10.set_neighbors([x, y11, y9, y15]) # 10: [1, 11, 19, 15]
-  y11.set_neighbors([x, y12, y9, y10]) # 11: [1, 12, 9, 10]
-  y12.set_neighbors([y11, y15, y14, y7, y9, y8]) # 12: [11, 15, 14, 7, 9, 8]
-  y13.set_neighbors([y14, y6, y7, y8]) # 13: [14, 6, 7, 8]
-  y14.set_neighbors([y2, y3, y4, y5, y13, y12, y15]) # 14: [2, 3, 4, 5, 13, 12, 15]
-  y15.set_neighbors([x, y2, y14, y12, y10]) # 15: [1, 2, 14, 12, 10]
+  x.set_neighbors([x10, x11, x15, x2]) # 1: [10, 11, 15, 2]
+  x2.set_neighbors([x, x15, x14, x3]) # 2: [1, 15, 14, 3]
+  x3.set_neighbors([x2, x14, x5, x4]) # 3: [2, 14, 5, 4]
+  x4.set_neighbors([x3, x14, x5, x6]) # 4: [3, 14, 15, 6]
+  x5.set_neighbors([x14, x3, x4, x6]) # 5: [14, 3, 4, 6]
+  x6.set_neighbors([x4, x5, x13, x7]) # 6: [4, 5, 13, 7]
+  x7.set_neighbors([x6, x13, x8, x12]) # 7: [6, 13, 8, 12]
+  x8.set_neighbors([x7, x13, x12, x9]) # 8: [7, 13, 12, 9]
+  x9.set_neighbors([x10, x11, x12, x8]) # 9: [10, 11, 12, 8]
+  x10.set_neighbors([x, x11, x9, x15]) # 10: [1, 11, 19, 15]
+  x11.set_neighbors([x, x12, x9, x10]) # 11: [1, 12, 9, 10]
+  x12.set_neighbors([x11, x15, x14, x7, x9, x8]) # 12: [11, 15, 14, 7, 9, 8]
+  x13.set_neighbors([x14, x6, x7, x8]) # 13: [14, 6, 7, 8]
+  x14.set_neighbors([x2, x3, x4, x5, x13, x12, x15]) # 14: [2, 3, 4, 5, 13, 12, 15]
+  x15.set_neighbors([x, x2, x14, x12, x10]) # 15: [1, 2, 14, 12, 10]
 
-  x_list = [x, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15]
+  x_list = [x, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15]
   return x_list
 
 ##############################################################################
