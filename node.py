@@ -11,7 +11,6 @@ import Queue, random, hashlib
 ###############################################################
 
 """ Todo:
-      * Merge node classes into one overall class 10 
       * ID != Sequence Number
       * Node will have dictionary of Queues, key = Destination ID, Value = Queue of route tokens
       * Interprocess communication, with only forward flooding working
@@ -20,7 +19,7 @@ import Queue, random, hashlib
       * Look up ipython
 """
 
-
+"""
  # call before figuring out which class I need to use
   # during the flood
 #def am_I_the_node(self, msg):
@@ -31,6 +30,7 @@ import Queue, random, hashlib
 def am_I_the_dest(self, msg):
   if msg[2][2] == 6 and 6 == self.DHT_ID: return True
   return False
+"""
 
 def flood_network(neighbor_list):
   for n in neighbor_list:
@@ -38,7 +38,7 @@ def flood_network(neighbor_list):
   pass
 
 ############################################
-# Source node, responsible for flooding
+# Node Class
 ############################################
 class node:
   def __init__(self, dht_id):
@@ -57,6 +57,7 @@ class node:
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
+    # sequence number
     seq_numz = self.z + 10000
     disco_msg = (seq_numz, self.scope, self.IBE)
     print "Discovery Message: ", disco_msg
@@ -68,42 +69,28 @@ class node:
 
   # call before figuring out which class I need to use
   # during the flood
-  def am_I_the_node(msg):
-    if msg[2][2] == self.DHT_ID: return True
-    return False
-
-    if route_id not in self.dupe:
-      # it's a duplicate -- do nothing
-      return
-
-    if route_id in self.response:
-      # reply to something we've seen before
-      # self.response[route_id] = return_hop
-      # forward_message to return_hop
-      pass
-    else :
-      responses[route_id] = source
-      # decrease scope by 1
-      # forward_message to all neighbors who are not source
-
-# discovery message, request ID and physical neighbor from disco_message
+  def am_I_the_node(self, dest_id):
+    if dest_id == self.DHT_ID: 
+      return True
+    else:
+      print "Nope.avi"
+      return False
+    
+  # discovery message, and source
   def process_message(self, disco_msg, source) :
     # adds to dictionary for ids not dealth with
 
     # implicit can I decrypt, if ID = 6
-    if am_I_the_node(disco_msg[2][2]):
-      return
-
-  def reply(self, route_request, scope):
-    # if it can decrypt route_request, generate gk-half key (ignore) and compose a response
-    ID_prime = None # seq_number_2
-
-    # R = FIFO queue with max entires
-    # each entry can read Null (None)
-    response = (ID_prime, R)
-    scope = scope - 1
-    # sends message to D, and "floods original request"
-    return response, scope
+    if self.am_I_the_node(disco_msg[2][2]):
+      print "Destination Node. You've reached the destination"
+    else :
+      pass
+      # keep track of previous hop, next hop, and sequence num
+      # previous hop = source
+      # next hop(s) = physical neighbors
+      # sequence num = disco_msg[0]
+      # for n in physical_neighbors:
+      #   n.flood()
 
   def who_am_i(self):
     return self.DHT_ID
@@ -111,10 +98,11 @@ class node:
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
 
+"""
+    Old Node not valid anymore, keeping it for reference for now
+"""
 ############################################################
 # Intermediate Node class
-# - Will pad route token with queue
-# - Cannot decrypt route discovery request, so intermediate
 ############################################################
 class node_Int:
   def __init__(self, dht_id, req_id) :
