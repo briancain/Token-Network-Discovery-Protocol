@@ -22,7 +22,6 @@ def main() :
 
   x_list = init_Node() # Get node objects
 
-  print "\nNodes initialized"
 
   print "Network topology:"
   print_network(x_list)
@@ -70,6 +69,7 @@ def init_Node() :
   x15.set_neighbors([x, x2, x14, x12, x10]) # 15: [1, 2, 14, 12, 10]
 
   x_list = [x, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15]
+  print "\nNodes initialized"
   return x_list
 
 ##############################################################################
