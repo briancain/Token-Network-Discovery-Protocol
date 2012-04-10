@@ -1,4 +1,5 @@
 import Queue, random, hashlib
+import server, easy_client
 
 ###############################################################
 
@@ -37,6 +38,9 @@ def flood_network(neighbor_list):
     pass
   pass
 
+def main():
+  pass
+
 ############################################
 # Node Class
 ############################################
@@ -54,6 +58,16 @@ class node:
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.dupe = dict() # hash table indexed by id and route
     self.response = dict()
+
+    # Init listening server
+    self.serv = server.server(self.DHT_ID)
+    print self.serv
+    # begin listening for incoming connections on port number
+    # self.serv.run_server()
+
+    # Init node as client
+    self.client = easy_client.client(self.DHT_ID)
+    print self.client
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
@@ -98,103 +112,8 @@ class node:
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
 
-"""
-    Old Node not valid anymore, keeping it for reference for now
-"""
-############################################################
-# Intermediate Node class
-############################################################
-class node_Int:
-  def __init__(self, dht_id, req_id) :
-    self.DHT_ID = dht_id # place holder value for now
-    # Needs to be a hash table (key=DHT ID, value =routing token)
-    self.dupe = dict() # hash table indexed by id and route
-    self.response = dict()
-    self.R = Queue.Queue()
-    self.request_id = req_id # Request ID
-    # self.source = source # source of request, must keep all
-    self.neighbor_list = []
-
-    # generate padded queue
-    for i in range(7):
-      self.R.put(None)
-
-  # discovery message, request ID and physical neighbor from disco_message
-  def process_message(self, disco_msg, source) :
-    # adds to dictionary for ids not dealth with
-
-    # implicit can I decrypt, if ID = 6
-    if am_I_the_node(disco_msg[2][2]):
-      return
-
-  # call before figuring out which class I need to use
-  # during the flood
-  def am_I_the_node(msg):
-    if msg[2][2] == self.DHT_ID: return True
-    return False
-
-    if route_id not in self.dupe:
-      # it's a duplicate -- do nothing
-      return
-
-    if route_id in self.response:
-      # reply to something we've seen before
-      # self.response[route_id] = return_hop
-      # forward_message to return_hop
-      pass
-    else :
-      responses[route_id] = source
-      # decrease scope by 1
-      # forward_message to all neighbors who are not source
-
-  def reply(self, route_request, scope):
-    # if it can decrypt route_request, generate gk-half key (ignore) and compose a response
-    ID_prime = None # seq_number_2
-
-    # R = FIFO queue with max entires
-    # each entry can read Null (None)
-    response = (ID_prime, R)
-    scope = scope - 1
-    # sends message to D, and "floods original request"
-    return response, scope
-
-  def flood(self, source) :
-    # generating routing token
-    temp_list = flood_network(source)
-    temp_list.append(self.msg_DHT_ID)
-    return temp_list
-
-  def who_am_i(self):
-    return self.DHT_ID
-
-  def set_neighbors(self, neigh_list):
-    self.neighbor_list = neigh_list
-
-##############################################################################
-# Destination node, going to be asked if it's correct node in flooding
-# algorithm
-##############################################################################
-class node_Dest:
-  def __init__(self, dht_id) :
-    self.DHT_ID = dht_id # dummy value for ID'
-
- # discovery message, request ID and physical neighbor from disco_message
-  def check_node(self, disco_msg, route_id, source) :
-    # if this is the node we are looking for....
-    # looks up table from previous request IDs
-    # finds the next hop, where response must be sent
-
-    # if scope is 0, drop message
-    if scope == 0 :
-      return
-
-    print "You are the winner!\n"
-    # constructs route token
-    lst = [self.msg_DHT_ID]
-    return lst # returning a response message
-
-  def who_am_i(self):
-    return self.DHT_ID
-
-  def set_neighbors(self, neigh_list):
-    self.neighbor_list = neigh_list
+####################################
+# Will Run Main
+####################################
+if __name__ == '__main__':
+  main()

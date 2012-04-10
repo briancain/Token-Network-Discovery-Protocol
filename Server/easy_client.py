@@ -13,7 +13,7 @@ types = get_constants('SOCK_')
 protocols = get_constants('IPPROTO_')
 
 # Create a TCP/IP socket
-sock = socket.create_connection(('localhost', 10002))
+sock = socket.create_connection(('localhost', 10000))
 
 print >>sys.stderr, 'Family  :', families[sock.family]
 print >>sys.stderr, 'Type    :', types[sock.type]

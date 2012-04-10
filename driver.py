@@ -106,7 +106,7 @@ def load():
 def print_network(x_list):
   print "\n"
   for x in x_list:
-    print "Source Node ID: ", x.who_am_i()
+    print "Node ID: ", x.who_am_i()
     print "[",
     for xn in x.neighbor_list:
       print xn.who_am_i(), ",",
