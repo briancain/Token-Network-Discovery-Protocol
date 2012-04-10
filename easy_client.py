@@ -12,7 +12,7 @@ import sys
 ###############################################################
 
 class client:
-  def __init__(self, port_id):
+  def __init__(self, port_id, flag):
     """Create a dictionary mapping socket module constants to their names."""
     self.families = dict((getattr(socket, n), n)
                    for n in dir(socket)
@@ -28,10 +28,11 @@ class client:
     self.port = 10000 + port_id
     self.sock = socket.create_connection(('localhost', self.port))
 
-    print >>sys.stderr, 'Family  :', self.families[self.sock.family]
-    print >>sys.stderr, 'Type    :', self.types[self.sock.type]
-    print >>sys.stderr, 'Protocol:', self.protocols[self.sock.proto]
-    print >>sys.stderr
+    if flag:
+      print >>sys.stderr, 'Family  :', self.families[self.sock.family]
+      print >>sys.stderr, 'Type    :', self.types[self.sock.type]
+      print >>sys.stderr, 'Protocol:', self.protocols[self.sock.proto]
+      print >>sys.stderr
 
   def run_client(self):
     try:

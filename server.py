@@ -12,7 +12,7 @@ import sys
 ###############################################################
 
 class server:
-  def __init__(self, port_id):
+  def __init__(self, port_id, flag):
     # Create a TCP/IP socket
 
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
