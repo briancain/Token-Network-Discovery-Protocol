@@ -10,7 +10,7 @@ First run the server so it can start listening, then run the client so it can se
 
 Run Server:
 
-    python ./server.py
+    python server.py
 
 Run Client:
 
