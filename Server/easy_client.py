@@ -13,7 +13,7 @@ types = get_constants('SOCK_')
 protocols = get_constants('IPPROTO_')
 
 # Create a TCP/IP socket
-sock = socket.create_connection(('localhost', 10000))
+sock = socket.create_connection(('localhost', 10002))
 
 print >>sys.stderr, 'Family  :', families[sock.family]
 print >>sys.stderr, 'Type    :', types[sock.type]
@@ -23,7 +23,9 @@ print >>sys.stderr
 try:
     
     # Send data
-    message = raw_input("Enter your message to send to the server: ")
+    # message = raw_input("Enter your message to send to the server: ")
+    data_message = (11, 22, 33) # example disco_msg
+    message = repr(data_message)
     print >>sys.stderr, 'sending "%s"' % message
     sock.sendall(message)
 
