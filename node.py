@@ -12,12 +12,9 @@ import server, easy_client
 ###############################################################
 
 """ Todo:
-      * ID != Sequence Number
-      * Node will have dictionary of Queues, key = Destination ID, Value = Queue of route tokens
       * Interprocess communication, with only forward flooding working
         - Intermediates will keep track of: Prev hop, next hop, and sequence num
-        - Send objects over python by using pickling
-      * Look up ipython
+       - Send objects over python by using pickling, or perhaps json
 """
 
 """
@@ -32,11 +29,6 @@ def am_I_the_dest(self, msg):
   if msg[2][2] == 6 and 6 == self.DHT_ID: return True
   return False
 """
-
-def flood_network(neighbor_list):
-  for n in neighbor_list:
-    pass
-  pass
 
 def main():
   pass
@@ -65,7 +57,7 @@ class node:
     self.serv = server.server(self.DHT_ID, True)
     print self.serv
     # begin listening for incoming connections on port number
-    self.serv.run_server()
+    # self.serv.run_server()
 
     # Init node as client
     self.client = easy_client.client(self.DHT_ID, False)
@@ -81,7 +73,7 @@ class node:
     self.flood_flag = True
     # sequence number
     seq_numz = self.z + 10000
-    disco_msg = (seq_numz, self.scope, self.IBE)
+    disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
     print "Discovery Message: ", disco_msg
     for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
@@ -102,24 +94,33 @@ class node:
       return False
     
   # discovery message, and source
-  def process_message(self, disco_msg, source) :
+  def process_message(self, disco_msg, prev_hop) :
     # adds to dictionary for ids not dealth with
     # implicit can I decrypt, if ID = 6
+
+    # decrease scope by 1, if 0 drop message
+    if disco_msg[1] <= 0:
+      return
+    else :
+      disco_msg[1] -= 1
+
     if self.am_I_the_dest(disco_msg):
       print "Destination Node. You've reached the destination"
       return
     else :
       # keep track of previous hop, next hop, and sequence num
-      # self.prev_hop['id'] = source # Not sure what the key will be
-      next_hops = self.neighbor_list # next hop = physical neighbors
-      sequence_num = disco_msg[0]
-      for n in next_hops:
-        if n.DHT_ID == source :
+      # self.prev_hop['id'] = prev_hop # Save this for dupe
+      # self.next_hops = self.neighbor_list # next hop = physical neig, dictionary
+      sequence_num = disco_msg[0] # should not be a single variable
+      # see if these variables match a previous message within dupe
+      # otherwise don't flood
+      for n in self.neighbor_list:
+        if n.DHT_ID == prev_hop :
           # don't flood source with same message
           continue
         else :
           print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
-          n.flood()
+          n.process_message(disco_msg, self.DHT_ID)
 
   def who_am_i(self):
     return self.DHT_ID
