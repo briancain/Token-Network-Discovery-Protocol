@@ -34,13 +34,13 @@ class client:
       print >>sys.stderr, 'Protocol:', self.protocols[self.sock.proto]
       print >>sys.stderr
 
-  def run_client(self):
+  def run_client(self, msg):
     try:
      
       # Send data
       # message = raw_input("Enter your message to send to the server: ")
-      data_message = (11, 22, 33) # example disco_msg
-      message = repr(data_message)
+      # data_message = (11, 22, 33) # example disco_msg
+      message = repr(msg)
       print >>sys.stderr, 'sending "%s"' % message
       sock.sendall(message)
 

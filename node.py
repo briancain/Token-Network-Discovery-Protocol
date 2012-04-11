@@ -65,7 +65,7 @@ class node:
     self.serv = server.server(self.DHT_ID, True)
     print self.serv
     # begin listening for incoming connections on port number
-    # self.serv.run_server()
+    self.serv.run_server()
 
     # Init node as client
     self.client = easy_client.client(self.DHT_ID, False)
