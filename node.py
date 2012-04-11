@@ -56,8 +56,10 @@ class node:
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
     self.routing_table = dict() # a dictionary of Queues, key = dest id
     # Needs to be a hash table (key=DHT ID, value =routing token)
-    self.dupe = dict() # hash table indexed by id and route
+    self.prev_hops = dict() # hash table indexed by id and route
     self.response = dict()
+
+    self.flood_flag = False
 
     # Init listening server
     self.serv = server.server(self.DHT_ID, True)
@@ -71,11 +73,20 @@ class node:
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
+    if self.flood_flag == True:
+      # has already flooded its neighbors
+      return
+
+    print "Flooding..."
+    self.flood_flag = True
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = (seq_numz, self.scope, self.IBE)
     print "Discovery Message: ", disco_msg
-    return disco_msg
+    for n in self.neighbor_list:
+      print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
+      # will process message over network here
+      n.process_message(disco_msg, self.DHT_ID)
 
   def am_I_the_dest(self, msg):
     if msg[2][2] == 6 and 6 == self.DHT_ID: return True
@@ -93,18 +104,22 @@ class node:
   # discovery message, and source
   def process_message(self, disco_msg, source) :
     # adds to dictionary for ids not dealth with
-
     # implicit can I decrypt, if ID = 6
-    if self.am_I_the_node(disco_msg[2][2]):
+    if self.am_I_the_dest(disco_msg):
       print "Destination Node. You've reached the destination"
+      return
     else :
-      pass
       # keep track of previous hop, next hop, and sequence num
-      # previous hop = source
-      # next hop(s) = physical neighbors
-      # sequence num = disco_msg[0]
-      # for n in physical_neighbors:
-      #   n.flood()
+      # self.prev_hop['id'] = source # Not sure what the key will be
+      next_hops = self.neighbor_list # next hop = physical neighbors
+      sequence_num = disco_msg[0]
+      for n in next_hops:
+        if n.DHT_ID == source :
+          # don't flood source with same message
+          continue
+        else :
+          print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
+          n.flood()
 
   def who_am_i(self):
     return self.DHT_ID

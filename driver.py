@@ -26,6 +26,8 @@ def main() :
   print "Network topology:"
   print_network(x_list)
 
+  x_list[0].flood()
+
   go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
     print "Flooding network.........."
