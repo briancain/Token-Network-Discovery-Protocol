@@ -1,3 +1,8 @@
+try:
+  import cPickle as pickle
+except:
+  import pickle
+
 import socket
 import sys
 
@@ -41,20 +46,21 @@ class server:
         # Recieve the data in small chunks and retransmit it
         while True:
           data = connection.recv(16)
-          temp_list.append(data)
+          self.temp_list.append(data)
           print >>sys.stderr, 'received "%s"' % data
           if data:
+            self.temp_list.append(data)
             print >>sys.stderr, 'sending data back to the client'
             connection.sendall(data)
           else:
             print >>sys.stderr, 'no more data from', client_address
             break
 
-        print "Temp List: ", temp_list
-        list_r = eval(temp_list[0])
-        print "The final list is: ", list_r
-        return list_r
-
+        join_ans = "".join(self.temp_list)
+        ans = pickle.load(join_ans)
+      
       finally:
          # Clean up the connection
          connection.close()
+
+      return ans

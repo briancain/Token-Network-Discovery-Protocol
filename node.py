@@ -1,5 +1,5 @@
 import Queue, random, hashlib
-import server, easy_client
+import server, client
 
 ###############################################################
 
@@ -60,7 +60,7 @@ class node:
     # self.serv.run_server()
 
     # Init node as client
-    self.client = easy_client.client(self.DHT_ID, False)
+    self.client = client.client(self.DHT_ID, False)
     print self.client, "\n"
 
 # Membership & Invitation Authority will initiate flooding technique

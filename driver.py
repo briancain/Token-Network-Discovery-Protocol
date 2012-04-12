@@ -32,8 +32,6 @@ def main() :
     print "Flooding network.........."
     x_list[0].flood()
 
-  inasdf = raw_input("awdfasdf")
-
 #######################################
 # Initalize nodes
 #######################################
