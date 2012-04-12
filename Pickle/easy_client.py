@@ -3,9 +3,6 @@ try:
 except:
   import pickle
 
-import pprint
-from StringIO import StringIO
-
 import socket
 import sys
 
@@ -28,34 +25,13 @@ print >>sys.stderr, 'Type    :', types[sock.type]
 print >>sys.stderr, 'Protocol:', protocols[sock.proto]
 print >>sys.stderr
 
-class SimpleObject(object):
-
-  def __init__(self, name):
-    self.name = name
-    l = list(name)
-    l.reverse()
-    self.name_backwards = ''.join(l)
-    return
-
-data = []
-data.append(SimpleObject('pickle'))
-data.append(SimpleObject('cPickle'))
-data.append(SimpleObject('last'))
-
-out_s = StringIO()
-
 try:
-    buffer_size = 256
     
     # Send data
-
-    for o in data:
-      print "WRITING: %s (%s)" % (o.name, o.name_backwards)
-      f = sock.makefile('wb', buffer_size)
-      pickle.dump(o, f, pickle.HIGHEST_PROTOCOL)
-      f.close()
-
-    message = f
+    data_message = [11, 22, 33] # example disco_msg
+    print "Data Message: ", data_message
+    message = pickle.dumps(data_message)
+    print "Pickled Message: ", message
     print >>sys.stderr, 'sending "%s"' % message
     sock.sendall(message)
 

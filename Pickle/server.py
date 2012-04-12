@@ -1,7 +1,7 @@
 try:
-  import cPickle as picke
+  import cPickle as pickle
 except:
-  import pickple
+  import pickle
 
 import pprint
 from StringIO import StringIO
@@ -21,6 +21,8 @@ sock.bind(server_address)
 # Listen for incoming connections
 sock.listen(1)
 
+list_ans = []
+
 while True:
   # wait for connection
   print >>sys.stderr, 'waiting for a connection'
@@ -34,11 +36,18 @@ while True:
       data = connection.recv(16)
       print >>sys.stderr, 'received "%s"' % data
       if data:
+        list_ans.append(data)
         print >>sys.stderr, 'sending data back to the client'
         connection.sendall(data)
       else:
         print >>sys.stderr, 'no more data from', client_address
         break
+    
+    # needed to reconstruct pickle string
+    print "List_ans = ", list_ans
+    join_ans = "".join(list_ans)
+    ans = pickle.loads(join_ans)
+    print "answer = ", ans
 
   finally:
      # Clean up the connection
