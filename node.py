@@ -55,13 +55,13 @@ class node:
 
     # Init listening server
     self.serv = server.server(self.DHT_ID, True)
-    print self.serv
+    print "[Node ", self.DHT_ID, "] ", self.serv
     # begin listening for incoming connections on port number
     # self.serv.run_server()
 
     # Init node as client
     self.client = client.client(self.DHT_ID, False)
-    print self.client, "\n"
+    print "[Node ", self.DHT_ID, "] ", self.client, "\n"
 
 # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
@@ -69,12 +69,12 @@ class node:
       # has already flooded its neighbors
       return
 
-    print "Flooding..."
+    print "[Node ", self.DHT_ID, "] ", "Flooding..."
     self.flood_flag = True
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
-    print "Discovery Message: ", disco_msg
+    print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
     for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
       # will process message over network here
@@ -90,7 +90,6 @@ class node:
     if dest_id == self.DHT_ID: 
       return True
     else:
-      print "Nope.avi"
       return False
     
   # discovery message, and source
