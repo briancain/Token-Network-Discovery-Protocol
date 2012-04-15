@@ -1,0 +1,4 @@
+Pickle
+============
+
+This is a simple demo on how to pickle, used for serialization and passing it through sockets
