@@ -51,6 +51,11 @@ def worker(node_id):
 def init_neighbors(node_id):
   """How will this work over the socket server
       - Will have to pass instance of node object to create physical neighbors
+
+      pickled_string = pickle.dumps(python object)
+      send over socket server
+      returned_string = pickle.loads(data)
+      repr(returned_string)
   """
 
   if node_id == 1:
