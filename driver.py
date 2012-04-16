@@ -1,4 +1,4 @@
-import node, time, sys
+import node, time, sys, multiprocessing
 
 ###############################################################
 
@@ -20,17 +20,73 @@ def main() :
   print "CIS 598: Senior Project\nProgrammed by: Brian Cain"
   print "###############################\n\n"
 
-  x_list = init_Node() # Get node objects
+  # x_list = init_Node() # Get node objects
 
+  jobs = []
+  for i in range(5):
+    p = multiprocessing.Process(target=worker, args=(i,))
+    jobs.append(p)
+    p.start()
 
-  print "Network topology:"
-  print_network(x_list)
-
-
-  go = mem_inv_auth() # membership invitation authority says when it can flood
+  """go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
     print "Flooding network.........."
-    x_list[0].flood()
+    x_list[0].flood()"""
+
+#############################################
+# Worker def
+#############################################
+def worker(node_id):
+  """thread worker function"""
+  nid = node_id + 1
+  print "Worker:", node_id , "Initializing Node:", nid
+  x = node.node(nid)
+  print "Node Initialized:", x
+  print "Node ID:", x.who_am_i()
+  return
+
+###########################################
+# Initialize Neighbor depending on the ID
+###########################################
+def init_neighbors(node_id):
+  """How will this work over the socket server
+      - Will have to pass instance of node object to create physical neighbors
+  """
+
+  if node_id == 1:
+    list_neigh = [x10, x11, x15, x2]
+  elif node_id == 2:
+    pass
+  elif node_id == 3:
+    pass
+  elif node_id == 4:
+    pass
+  elif node_id == 5:
+    pass
+  elif node_id == 6:
+    pass
+  elif node_id == 7:
+    pass
+  elif node_id == 8:
+    pass
+  elif node_id == 9:
+    pass
+  elif node_id == 10:
+    pass
+  elif node_id == 11:
+    pass
+  elif node_id == 12:
+    pass
+  elif node_id == 13:
+    pass
+  elif node_id == 14:
+    pass
+  elif node_id == 15:
+    pass
+  else :
+    print "Invalid Node ID"
+
+  return list_neigh
 
 #######################################
 # Initalize nodes
