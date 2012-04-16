@@ -43,6 +43,8 @@ def worker(node_id):
   x = node.node(nid)
   print "Node Initialized:", x
   print "Node ID:", x.who_am_i()
+  lst = init_neighbors(x.who_am_i())
+  x.set_neighbors(lst)
   return
 
 ###########################################
@@ -61,35 +63,35 @@ def init_neighbors(node_id):
   """
 
   if node_id == 1:
-    list_neigh = [x10, x11, x15, x2]
+    list_neigh = [10010, 10011, 10015, 10002]
   elif node_id == 2:
-    list_neigh = [x, x15, x14, x3]
+    list_neigh = [10000, 10015, 10014, 10003]
   elif node_id == 3:
-    list_neigh = [x2, x14, x5, x4]
+    list_neigh = [10002, 10014, 10005, 10004]
   elif node_id == 4:
-    list_neigh = [x3, x14, x5, x6]
+    list_neigh = [10003, 10014, 10005, 10006]
   elif node_id == 5:
-    list_neigh = [x14, x3, x4, x6]
+    list_neigh = [10014, 10003, 10004, 10006]
   elif node_id == 6:
-    list_neigh = [x4, x5, x13, x7]
+    list_neigh = [10004, 10005, 10013, 10007]
   elif node_id == 7:
-    list_neigh = [x6, x13, x8, x12]
+    list_neigh = [10006, 10013, 10008, 10012]
   elif node_id == 8:
-    list_neigh = [x7, x13, x12, x9]
+    list_neigh = [10007, 10013, 10012, 10009]
   elif node_id == 9:
-    list_neigh = [x10, x11, x12, x8]
+    list_neigh = [10010, 10011, 10012, 10008]
   elif node_id == 10:
-    list_neigh = [x, x11, x9, x15]
+    list_neigh = [10000, 10011, 10009, 10015]
   elif node_id == 11:
-    list_neigh = [x, x12, x9, x10]
+    list_neigh = [10000, 10012, 10009, 10010]
   elif node_id == 12:
-    list_neigh = [x11, x15, x14, x7, x9, x8]
+    list_neigh = [10011, 10015, 10014, 10007, 10009, 10008]
   elif node_id == 13:
-    list_neigh = [x14, x6, x7, x8]
+    list_neigh = [10014, 10006, 10007, 10008]
   elif node_id == 14:
-    list_neigh = [x2, x3, x4, x5, x13, x12, x15]
+    list_neigh = [10002, 10003, 10004, 10005, 10013, 10012, 10015]
   elif node_id == 15:
-    list_neigh = [x, x2, x14, x12, x10]
+    list_neigh = [10000, 10002, 10014, 10012, 10010]
   else :
     print "Invalid Node ID"
 
