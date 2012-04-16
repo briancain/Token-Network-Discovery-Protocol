@@ -56,38 +56,40 @@ def init_neighbors(node_id):
       send over socket server
       returned_string = pickle.loads(data)
       repr(returned_string)
+
+      port id = 10000 + dht_id
   """
 
   if node_id == 1:
     list_neigh = [x10, x11, x15, x2]
   elif node_id == 2:
-    pass
+    list_neigh = [x, x15, x14, x3]
   elif node_id == 3:
-    pass
+    list_neigh = [x2, x14, x5, x4]
   elif node_id == 4:
-    pass
+    list_neigh = [x3, x14, x5, x6]
   elif node_id == 5:
-    pass
+    list_neigh = [x14, x3, x4, x6]
   elif node_id == 6:
-    pass
+    list_neigh = [x4, x5, x13, x7]
   elif node_id == 7:
-    pass
+    list_neigh = [x6, x13, x8, x12]
   elif node_id == 8:
-    pass
+    list_neigh = [x7, x13, x12, x9]
   elif node_id == 9:
-    pass
+    list_neigh = [x10, x11, x12, x8]
   elif node_id == 10:
-    pass
+    list_neigh = [x, x11, x9, x15]
   elif node_id == 11:
-    pass
+    list_neigh = [x, x12, x9, x10]
   elif node_id == 12:
-    pass
+    list_neigh = [x11, x15, x14, x7, x9, x8]
   elif node_id == 13:
-    pass
+    list_neigh = [x14, x6, x7, x8]
   elif node_id == 14:
-    pass
+    list_neigh = [x2, x3, x4, x5, x13, x12, x15]
   elif node_id == 15:
-    pass
+    list_neigh = [x, x2, x14, x12, x10]
   else :
     print "Invalid Node ID"
 
