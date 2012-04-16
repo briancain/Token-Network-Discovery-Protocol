@@ -45,6 +45,7 @@ def worker(node_id):
   print "Node ID:", x.who_am_i()
   lst = init_neighbors(x.who_am_i())
   x.set_neighbors(lst)
+  print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
   return
 
 ###########################################
