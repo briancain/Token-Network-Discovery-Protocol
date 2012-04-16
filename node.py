@@ -55,7 +55,7 @@ class node:
 
     # Init listening server
     self.serv = server.server(self.DHT_ID, True)
-    print "[Node ", self.DHT_ID, "] ", self.serv
+    # print "[Node ", self.DHT_ID, "] ", self.serv
     # begin listening for incoming connections on port number
     # self.serv.run_server()
 
@@ -63,7 +63,13 @@ class node:
     self.client = client.client(self.DHT_ID, False)
     print "[Node ", self.DHT_ID, "] ", self.client, "\n"
 
-# Membership & Invitation Authority will initiate flooding technique
+  # Begin listening for incoming connections
+  def begin_listen(self):
+    print "[Node ", self.DHT_ID, "] ", self.serv
+    # begin listening for incoming connections on port number
+    self.serv.run_server()
+
+  # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
     if self.flood_flag == True:
       # has already flooded its neighbors
@@ -80,6 +86,7 @@ class node:
       # will process message over network here
       n.process_message(disco_msg, self.DHT_ID)
 
+  # Is this node the destination?
   def am_I_the_dest(self, msg):
     if msg[2][2] == 6 and 6 == self.DHT_ID: return True
     return False
@@ -121,9 +128,11 @@ class node:
           print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
           n.process_message(disco_msg, self.DHT_ID)
 
+  # Return id of node
   def who_am_i(self):
     return self.DHT_ID
 
+  # Set neighbors of node
   def set_neighbors(self, neigh_list):
     self.neighbor_list = neigh_list
 

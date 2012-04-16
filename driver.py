@@ -44,8 +44,21 @@ def worker(node_id):
   print "Node Initialized:", x
   print "Node ID:", x.who_am_i()
   lst = init_neighbors(x.who_am_i())
+
+  if list is None:
+    return
+
   x.set_neighbors(lst)
   print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
+
+  """Enable waiting/listening function
+     Start node 1 flooding
+     Pass string to flood over sockets, boolean?
+      if True:
+        process_message
+
+  """
+  x.begin_listen()
   return
 
 ###########################################
@@ -95,6 +108,7 @@ def init_neighbors(node_id):
     list_neigh = [10000, 10002, 10014, 10012, 10010]
   else :
     print "Invalid Node ID"
+    return None
 
   return list_neigh
 
