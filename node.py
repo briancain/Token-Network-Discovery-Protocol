@@ -1,5 +1,5 @@
 import Queue, random, hashlib
-import server, client
+import server, client, errno
 
 ###############################################################
 
@@ -62,6 +62,15 @@ class node:
     # Init node as client
     self.client_list = []
     self.client = client.client(self.DHT_ID, False)
+
+    try:
+      self.client2 = client.client(100000, False)
+    except client.socket.error as e:
+      if e.errno == errno.ECONNREFUSED:
+        print "[Node ", self.DHT_ID, "] ", "Connection Refused"
+      else:
+        raise
+
     print "[Node ", self.DHT_ID, "] ", self.client, "\n"
 
   # Begin listening for incoming connections
