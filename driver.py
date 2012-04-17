@@ -23,7 +23,7 @@ def main() :
   # x_list = init_Node() # Get node objects
 
   jobs = []
-  for i in range(5):
+  for i in range(15):
     p = multiprocessing.Process(target=worker, args=(i,))
     jobs.append(p)
     p.start()

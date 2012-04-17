@@ -60,6 +60,7 @@ class node:
     # self.serv.run_server()
 
     # Init node as client
+    self.client_list = []
     self.client = client.client(self.DHT_ID, False)
     print "[Node ", self.DHT_ID, "] ", self.client, "\n"
 
@@ -115,8 +116,8 @@ class node:
       return
     else :
       # keep track of previous hop, next hop, and sequence num
-      # self.prev_hop['id'] = prev_hop # Save this for dupe
-      # self.next_hops = self.neighbor_list # next hop = physical neig, dictionary
+      self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
+      self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
       sequence_num = disco_msg[0] # should not be a single variable
       # see if these variables match a previous message within dupe
       # otherwise don't flood
