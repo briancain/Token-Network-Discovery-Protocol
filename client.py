@@ -30,8 +30,12 @@ class client:
                    if n.startswith('IPPROTO_'))
 
     # Create a TCP/IP socket
+    self.test = flag
     self.port = 10000 + port_id
-    self.sock = socket.create_connection(('localhost', self.port))
+    if flag:
+      self.sock = socket.create_connection(('localhost', port_id))
+    elif not flag:
+      self.sock = socket.create_connection(('localhost', self.port))
 
     if flag:
       print >>sys.stderr, 'Family  :', self.families[self.sock.family]

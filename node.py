@@ -63,6 +63,9 @@ class node:
     self.client_list = []
     self.client = client.client(self.DHT_ID, False)
 
+    self.client2 = client.client(100000, False)
+
+    """ Linux only, does not work on OS X
     try:
       self.client2 = client.client(100000, False)
     except client.socket.error as e:
@@ -70,6 +73,7 @@ class node:
         print "[Node ", self.DHT_ID, "] ", "Connection Refused"
       else:
         raise
+    """
 
     print "[Node ", self.DHT_ID, "] ", self.client, "\n"
 
