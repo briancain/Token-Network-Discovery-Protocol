@@ -63,11 +63,16 @@ class node:
     self.client_list = []
     self.client = client.client(self.DHT_ID, False)
 
-    self.client2 = client.client(100000, False)
+    # self.client2 = client.client(100000, True)
+
+    try:
+      self.client2 = client.client(10100, True)
+    except:
+      print "!!!!! - [Node ", self.DHT_ID, "] ", "gaierror: [Errno 8] nodename nor sername provided, or not known !!!!!"
 
     """ Linux only, does not work on OS X
     try:
-      self.client2 = client.client(100000, False)
+      self.client2 = client.client(10100, True)
     except client.socket.error as e:
       if e.errno == errno.ECONNREFUSED:
         print "[Node ", self.DHT_ID, "] ", "Connection Refused"

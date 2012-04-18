@@ -22,6 +22,7 @@ def main() :
 
   # x_list = init_Node() # Get node objects
 
+  # multi-processing area
   jobs = []
   for i in range(15):
     p = multiprocessing.Process(target=worker, args=(i,))
