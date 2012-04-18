@@ -39,10 +39,6 @@ def main():
 class node:
   def __init__(self, dht_id):
     self.DHT_ID =  dht_id # id of node
-    self.scope = 8 # flood depth
-    self.R = Queue.Queue() # route descriptor
-    self.z = random.randint(1001, 1010) # random number
-    self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
     # Can only talk to neighbors (Array/List of DHT keys)
     self.neighbor_list = [] # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
@@ -50,6 +46,12 @@ class node:
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.prev_hops = dict() # hash table indexed by id and route
     self.response = dict()
+
+    if self.DHT_ID is 6:
+      self.scope = 8 # flood depth
+      self.R = Queue.Queue() # route descriptor
+      self.z = random.randint(1001, 1010) # random number
+      self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
 
     self.flood_flag = False
 
@@ -60,27 +62,34 @@ class node:
     # self.serv.run_server()
 
     # Init node as client
-    self.client_list = []
+    #self.client_list = []
     self.client = client.client(self.DHT_ID, False)
 
     # self.client2 = client.client(100000, True)
 
-    try:
-      self.client2 = client.client(10100, True)
-    except:
-      print "!!!!! - [Node ", self.DHT_ID, "] ", "gaierror: [Errno 8] nodename nor sername provided, or not known !!!!!"
-
-    """ Linux only, does not work on OS X
-    try:
-      self.client2 = client.client(10100, True)
-    except client.socket.error as e:
-      if e.errno == errno.ECONNREFUSED:
-        print "[Node ", self.DHT_ID, "] ", "Connection Refused"
-      else:
-        raise
-    """
+    #try:
+    #  self.client2 = client.client(10100, True)
+    #except:
+    #  print "!!!!! - [Node ", self.DHT_ID, "] ", "gaierror: [Errno 8] nodename nor sername provided, or not known !!!!!"
+    #
+    #""" Linux only, does not work on OS X
+    #try:
+    #  self.client2 = client.client(10100, True)
+    #except client.socket.error as e:
+    #  if e.errno == errno.ECONNREFUSED:
+    #    print "[Node ", self.DHT_ID, "] ", "Connection Refused"
+    #  else:
+    #    raise
+    #"""
 
     print "[Node ", self.DHT_ID, "] ", self.client, "\n"
+    print self
+    print self, self.client, "\n"
+    self.bprint("hi", self.client, "\n\n\n")
+
+  def __str__(self): return str(self.DHT_ID)
+
+  def bprint(self, *args): print self, " ".join([str(x) for x in args])
 
   # Begin listening for incoming connections
   def begin_listen(self):
@@ -90,12 +99,15 @@ class node:
 
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
-    if self.flood_flag == True:
-      # has already flooded its neighbors
+    #if self.flood_flag == True:
+    #  # has already flooded its neighbors
+    #  return
+    if self.DHT_ID is not 1:
+      FIXME:I_AM_AN_ERROR
       return
 
     print "[Node ", self.DHT_ID, "] ", "Flooding..."
-    self.flood_flag = True
+    #self.flood_flag = True
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
@@ -107,13 +119,13 @@ class node:
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
-    if msg[2][2] == 6 and 6 == self.DHT_ID: return True
+    if msg[2][2] is 6 and 6 is self.DHT_ID: return True
     return False
 
   # call before figuring out which class I need to use
   # during the flood
   def am_I_the_node(self, dest_id):
-    if dest_id == self.DHT_ID: 
+    if dest_id is self.DHT_ID: 
       return True
     else:
       return False
@@ -134,18 +146,27 @@ class node:
       return
     else :
       # keep track of previous hop, next hop, and sequence num
-      self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
-      self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
-      sequence_num = disco_msg[0] # should not be a single variable
+      ###self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
+      ###self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
+      ###sequence_num = disco_msg[0] # should not be a single variable
       # see if these variables match a previous message within dupe
       # otherwise don't flood
       for n in self.neighbor_list:
-        if n.DHT_ID == prev_hop :
+        if not self.dups_seqnums: self.dups_seqnums = dict()
+        self.dups_seqnums[disco_msg[0]] = True
+        if not self.dups: self.dups_seqnums = dict()
+        if n.DHT_ID == prev_hop:
           # don't flood source with same message
           continue
         else :
-          print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
-          n.process_message(disco_msg, self.DHT_ID)
+          if not check_dups(disco_msg, prev_hop):
+            print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
+            ###FIXME???????
+            self.dups[(prev_hop, next_hop)] = True
+            ###ASSUME NEXT_HOP is n??? or vice versa?
+            n.process_message(disco_msg, self.DHT_ID)
+          else:
+            print "Node ", self.DHT_ID, " got dup ", disco_msg, ", not flooding"
 
   # Return id of node
   def who_am_i(self):

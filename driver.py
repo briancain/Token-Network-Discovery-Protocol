@@ -43,7 +43,7 @@ def worker(node_id):
   print "Worker:", node_id , "Initializing Node:", nid
   x = node.node(nid)
   print "Node Initialized:", x
-  print "Node ID:", x.who_am_i()
+  #print "Node ID:", x.who_am_i()
   lst = init_neighbors(x.who_am_i())
 
   if list is None:

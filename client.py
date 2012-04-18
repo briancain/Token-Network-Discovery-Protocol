@@ -64,4 +64,6 @@ class client:
       print >>sys.stderr, 'closing socket'
       sock.close()
 
-  
+  def __str__(self):
+    return "Client at port" + str(self.port)
+
