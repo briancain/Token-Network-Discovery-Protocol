@@ -1,4 +1,4 @@
-import Queue, random, hashlib
+import Queue, random, hashlib, collections
 import server, client, errno
 
 ###############################################################
@@ -46,8 +46,10 @@ class node:
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.prev_hops = dict() # hash table indexed by id and route
     self.response = dict()
+    self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
 
-    if self.DHT_ID is 6:
+    # is not??
+    if self.DHT_ID is 6: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
       self.R = Queue.Queue() # route descriptor
       self.z = random.randint(1001, 1010) # random number
@@ -103,7 +105,7 @@ class node:
     #  # has already flooded its neighbors
     #  return
     if self.DHT_ID is not 1:
-      FIXME:I_AM_AN_ERROR
+      raise Exception, "Not a valid node for flooding, sorry"
       return
 
     print "[Node ", self.DHT_ID, "] ", "Flooding..."
@@ -111,6 +113,8 @@ class node:
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
+    # use this disco msg instead for later
+    disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
     for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
@@ -155,7 +159,7 @@ class node:
         if not self.dups_seqnums: self.dups_seqnums = dict()
         self.dups_seqnums[disco_msg[0]] = True
         if not self.dups: self.dups_seqnums = dict()
-        if n.DHT_ID == prev_hop:
+        if n.DHT_ID == prev_hop: # this might be changed to an is if prev hop and DHT_ID are the same instance, rather than the same variable
           # don't flood source with same message
           continue
         else :
