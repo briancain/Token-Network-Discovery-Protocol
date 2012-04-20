@@ -49,7 +49,7 @@ class node:
     self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
 
     # is not??
-    if self.DHT_ID is 6: # could be ==, since they will both be holding the value 6, rather than an instance
+    if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
       self.R = Queue.Queue() # route descriptor
       self.z = random.randint(1001, 1010) # random number
