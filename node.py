@@ -1,5 +1,6 @@
 import Queue, random, hashlib, collections
 import server, client, errno
+from collections import deque
 
 ###############################################################
 
@@ -51,21 +52,21 @@ class node:
     # is not??
     if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
-      self.R = Queue.Queue() # route descriptor
+      self.R = deque() # route descriptor
       self.z = random.randint(1001, 1010) # random number
       self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
 
     self.flood_flag = False
 
     # Init listening server
-    self.serv = server.server(self.DHT_ID, True)
+    # self.serv = server.server(self.DHT_ID, True)
     # print "[Node ", self.DHT_ID, "] ", self.serv
     # begin listening for incoming connections on port number
     # self.serv.run_server()
 
     # Init node as client
     #self.client_list = []
-    self.client = client.client(self.DHT_ID, False)
+    # self.client = client.client(self.DHT_ID, False)
 
     # self.client2 = client.client(100000, True)
 
@@ -84,10 +85,11 @@ class node:
     #    raise
     #"""
 
-    print "[Node ", self.DHT_ID, "] ", self.client, "\n"
+    """print "[Node ", self.DHT_ID, "] ", self.client, "\n"
     print self
     print self, self.client, "\n"
     self.bprint("hi", self.client, "\n\n\n")
+    """
 
   def __str__(self): return str(self.DHT_ID)
 
@@ -116,10 +118,12 @@ class node:
     # use this disco msg instead for later
     disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
-    for n in self.neighbor_list:
+    return disco_msg
+    """for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
       # will process message over network here
       n.process_message(disco_msg, self.DHT_ID)
+    """
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):

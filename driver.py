@@ -1,4 +1,5 @@
 import node, time, sys, multiprocessing
+from multiprocessing import Process, Queue
 
 ###############################################################
 
@@ -23,11 +24,23 @@ def main() :
   # x_list = init_Node() # Get node objects
 
   # multi-processing area
-  jobs = []
+  """jobs = []
   for i in range(15):
     p = multiprocessing.Process(target=worker, args=(i,))
     jobs.append(p)
     p.start()
+  """
+ 
+  jobs = []
+  queues = []
+  for i in range(1):
+    q = multiprocessing.Queue()
+    p = Process(target=worker, args=(i,q,))
+    jobs.append(p)
+    queues.append(q)
+    p.start()
+    print "Disco Message from Driver: ", q.get()
+    p.join()
 
   """go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
@@ -37,13 +50,18 @@ def main() :
 #############################################
 # Worker def
 #############################################
-def worker(node_id):
+def worker(node_id, q):
   """thread worker function"""
   nid = node_id + 1
   print "Worker:", node_id , "Initializing Node:", nid
   x = node.node(nid)
   print "Node Initialized:", x
   #print "Node ID:", x.who_am_i()
+  if nid is 1:
+    disco_msg = x.flood()
+    q.put(disco_msg)
+    return 
+
   lst = init_neighbors(x.who_am_i())
 
   if list is None:
@@ -59,7 +77,7 @@ def worker(node_id):
         process_message
 
   """
-  x.begin_listen()
+  # x.begin_listen()
   return
 
 ###########################################
