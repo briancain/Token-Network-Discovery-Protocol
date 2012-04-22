@@ -1,4 +1,4 @@
-import node, time, sys, multiprocessing
+import node, time, sys, multiprocessing, logging
 from multiprocessing import Process, Queue
 
 ###############################################################
@@ -33,14 +33,22 @@ def main() :
  
   jobs = []
   queues = []
-  for i in range(1):
+  msg = []
+  multiprocessing.log_to_stderr()
+  logger = multiprocessing.get_logger()
+  logger.setLevel(logging.INFO)
+  for i in range(5):
     q = multiprocessing.Queue()
     p = Process(target=worker, args=(i,q,))
     jobs.append(p)
     queues.append(q)
     p.start()
-    print "Disco Message from Driver: ", q.get()
-    p.join()
+    msg.append(q.get())
+    print "Disco Message from Driver: ", msg[0]
+    print "Existing Jobs:", jobs
+    # p.join()
+
+  print "\n\nLeft over Jobs:", jobs
 
   """go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
@@ -60,7 +68,10 @@ def worker(node_id, q):
   if nid is 1:
     disco_msg = x.flood()
     q.put(disco_msg)
-    return 
+    return
+  else:
+    q.put(["This is a test"])
+    return
 
   lst = init_neighbors(x.who_am_i())
 
@@ -70,13 +81,7 @@ def worker(node_id, q):
   x.set_neighbors(lst)
   print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
 
-  """Enable waiting/listening function
-     Start node 1 flooding
-     Pass string to flood over sockets, boolean?
-      if True:
-        process_message
 
-  """
   # x.begin_listen()
   return
 

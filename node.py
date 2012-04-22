@@ -1,5 +1,4 @@
 import Queue, random, hashlib, collections
-import server, client, errno
 from collections import deque
 
 ###############################################################
@@ -58,33 +57,6 @@ class node:
 
     self.flood_flag = False
 
-    # Init listening server
-    # self.serv = server.server(self.DHT_ID, True)
-    # print "[Node ", self.DHT_ID, "] ", self.serv
-    # begin listening for incoming connections on port number
-    # self.serv.run_server()
-
-    # Init node as client
-    #self.client_list = []
-    # self.client = client.client(self.DHT_ID, False)
-
-    # self.client2 = client.client(100000, True)
-
-    #try:
-    #  self.client2 = client.client(10100, True)
-    #except:
-    #  print "!!!!! - [Node ", self.DHT_ID, "] ", "gaierror: [Errno 8] nodename nor sername provided, or not known !!!!!"
-    #
-    #""" Linux only, does not work on OS X
-    #try:
-    #  self.client2 = client.client(10100, True)
-    #except client.socket.error as e:
-    #  if e.errno == errno.ECONNREFUSED:
-    #    print "[Node ", self.DHT_ID, "] ", "Connection Refused"
-    #  else:
-    #    raise
-    #"""
-
     """print "[Node ", self.DHT_ID, "] ", self.client, "\n"
     print self
     print self, self.client, "\n"
@@ -103,15 +75,11 @@ class node:
 
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
-    #if self.flood_flag == True:
-    #  # has already flooded its neighbors
-    #  return
     if self.DHT_ID is not 1:
       raise Exception, "Not a valid node for flooding, sorry"
       return
 
     print "[Node ", self.DHT_ID, "] ", "Flooding..."
-    #self.flood_flag = True
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
