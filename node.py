@@ -1,5 +1,6 @@
-import Queue, random, hashlib, collections
+import Queue, random, collections, xmlrpclib, multiprocessing
 from collections import deque
+from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 ###############################################################
 
@@ -37,10 +38,10 @@ def main():
 # Node Class
 ############################################
 class node:
-  def __init__(self, dht_id):
+  def __init__(self, dht_id, lst):
     self.DHT_ID =  dht_id # id of node
     # Can only talk to neighbors (Array/List of DHT keys)
-    self.neighbor_list = [] # Just an example for now, list with node neighbors
+    self.neighbor_list = lst # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
     self.routing_table = dict() # a dictionary of Queues, key = dest id
     # Needs to be a hash table (key=DHT ID, value =routing token)
@@ -55,23 +56,55 @@ class node:
       self.z = random.randint(1001, 1010) # random number
       self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
 
-    self.flood_flag = False
-
     """print "[Node ", self.DHT_ID, "] ", self.client, "\n"
     print self
     print self, self.client, "\n"
     self.bprint("hi", self.client, "\n\n\n")
     """
 
+    """self.port = 8000 + self.DHT_ID
+    self.server = SimpleXMLRPCServer(("localhost", self.port))
+    port_test = 7000 + self.DHT_ID
+    self.server_test = SimpleXMLRPCServer(("localhost", port_test))
+    self.server_list = [self.server, self.server_test]
+    
+    strng = "http://localhost:" + str(self.port) + "/"
+    proxy = xmlrpclib.ServerProxy(strng)
+    # self.begin_listen()
+    jobs = []
+    port_id = [self.port, port_test]
+    """
+    jobs = []
+    ran = len(self.neighbor_list)
+    self.port_list, self.server_list = self.init_server(ran)
+    for i in range(0, ran):
+      ser = self.server_list[i]
+      pids = self.port_list[i]
+      p = multiprocessing.Process(target=self.begin_listen, args=(ser, pids))
+      jobs.append(p)
+      p.start()
+
   def __str__(self): return str(self.DHT_ID)
 
   def bprint(self, *args): print self, " ".join([str(x) for x in args])
 
+  def init_server(self, ran):
+    port_list = []
+    server_list = []
+    for s in range(0, ran):
+      # port = 8000 + self.DHT_ID + (s+100)
+      port = (self.DHT_ID*4000) + self.neighbor_list[s]
+      port_list.append(port)
+      server = SimpleXMLRPCServer(("localhost", port))
+      server.register_function(self.flood, "flood")
+      server_list.append(server)
+
+    return port_list, server_list
+
   # Begin listening for incoming connections
-  def begin_listen(self):
-    print "[Node ", self.DHT_ID, "] ", self.serv
-    # begin listening for incoming connections on port number
-    self.serv.run_server()
+  def begin_listen(self, server, port_id):
+    print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
+    server.serve_forever()
 
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
@@ -87,6 +120,7 @@ class node:
     disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
     return disco_msg
+    # for each client in node, process message
     """for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
       # will process message over network here

@@ -32,23 +32,15 @@ def main() :
   """
  
   jobs = []
-  queues = []
-  msg = []
-  multiprocessing.log_to_stderr()
+  """multiprocessing.log_to_stderr()
   logger = multiprocessing.get_logger()
   logger.setLevel(logging.INFO)
-  for i in range(5):
-    q = multiprocessing.Queue()
-    p = Process(target=worker, args=(i,q,))
+  """
+  for i in range(15):
+    p = Process(target=worker, args=(i,))
     jobs.append(p)
-    queues.append(q)
     p.start()
-    msg.append(q.get())
-    print "Disco Message from Driver: ", msg[0]
-    print "Existing Jobs:", jobs
     # p.join()
-
-  print "\n\nLeft over Jobs:", jobs
 
   """go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
@@ -58,29 +50,20 @@ def main() :
 #############################################
 # Worker def
 #############################################
-def worker(node_id, q):
+def worker(node_id):
   """thread worker function"""
   nid = node_id + 1
   print "Worker:", node_id , "Initializing Node:", nid
-  x = node.node(nid)
+  lst = init_neighbors(nid)
+  x = node.node(nid, lst)
   print "Node Initialized:", x
-  #print "Node ID:", x.who_am_i()
-  if nid is 1:
-    disco_msg = x.flood()
-    q.put(disco_msg)
-    return
-  else:
-    q.put(["This is a test"])
-    return
 
-  lst = init_neighbors(x.who_am_i())
 
   if list is None:
     return
 
-  x.set_neighbors(lst)
-  print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
-
+  # x.set_neighbors(lst)
+  # print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
 
   # x.begin_listen()
   return
@@ -101,35 +84,35 @@ def init_neighbors(node_id):
   """
 
   if node_id == 1:
-    list_neigh = [10010, 10011, 10015, 10002]
+    list_neigh = [10, 11, 15, 2]
   elif node_id == 2:
-    list_neigh = [10000, 10015, 10014, 10003]
+    list_neigh = [1, 15, 14, 3]
   elif node_id == 3:
-    list_neigh = [10002, 10014, 10005, 10004]
+    list_neigh = [2, 14, 5, 4]
   elif node_id == 4:
-    list_neigh = [10003, 10014, 10005, 10006]
+    list_neigh = [3, 14, 5, 6]
   elif node_id == 5:
-    list_neigh = [10014, 10003, 10004, 10006]
+    list_neigh = [14, 3, 4, 6]
   elif node_id == 6:
-    list_neigh = [10004, 10005, 10013, 10007]
+    list_neigh = [4, 5, 13, 7]
   elif node_id == 7:
-    list_neigh = [10006, 10013, 10008, 10012]
+    list_neigh = [6, 13, 8, 12]
   elif node_id == 8:
-    list_neigh = [10007, 10013, 10012, 10009]
+    list_neigh = [7, 13, 12, 9]
   elif node_id == 9:
-    list_neigh = [10010, 10011, 10012, 10008]
+    list_neigh = [10, 11, 12, 8]
   elif node_id == 10:
-    list_neigh = [10000, 10011, 10009, 10015]
+    list_neigh = [1, 11, 9, 15]
   elif node_id == 11:
-    list_neigh = [10000, 10012, 10009, 10010]
+    list_neigh = [1, 12, 9, 10]
   elif node_id == 12:
-    list_neigh = [10011, 10015, 10014, 10007, 10009, 10008]
+    list_neigh = [11, 15, 14, 7, 9, 8]
   elif node_id == 13:
-    list_neigh = [10014, 10006, 10007, 10008]
+    list_neigh = [14, 6, 7, 8]
   elif node_id == 14:
-    list_neigh = [10002, 10003, 10004, 10005, 10013, 10012, 10015]
+    list_neigh = [2, 3, 4, 5, 13, 12, 15]
   elif node_id == 15:
-    list_neigh = [10000, 10002, 10014, 10012, 10010]
+    list_neigh = [1, 2, 14, 12, 10]
   else :
     print "Invalid Node ID"
     return None
