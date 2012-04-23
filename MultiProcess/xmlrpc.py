@@ -9,5 +9,3 @@ server1 = SimpleXMLRPCServer(("Localhost", 8010))
 print "Listening on port 8000..."
 server.register_function(is_even, "is_even")
 server.serve_forever()
-server1.server_forever()
-print "Listening on port 8010..."

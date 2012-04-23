@@ -62,6 +62,11 @@ def worker(node_id):
   if list is None:
     return
 
+  if nid is 1:
+    x.flood()
+  else:
+    print "Waiting..."
+
   # x.set_neighbors(lst)
   # print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
 

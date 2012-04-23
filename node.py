@@ -1,4 +1,4 @@
-import Queue, random, collections, xmlrpclib, multiprocessing
+import Queue, random, collections, xmlrpclib, multiprocessing, logging
 from collections import deque
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
@@ -62,21 +62,15 @@ class node:
     self.bprint("hi", self.client, "\n\n\n")
     """
 
-    """self.port = 8000 + self.DHT_ID
-    self.server = SimpleXMLRPCServer(("localhost", self.port))
-    port_test = 7000 + self.DHT_ID
-    self.server_test = SimpleXMLRPCServer(("localhost", port_test))
-    self.server_list = [self.server, self.server_test]
-    
-    strng = "http://localhost:" + str(self.port) + "/"
-    proxy = xmlrpclib.ServerProxy(strng)
-    # self.begin_listen()
-    jobs = []
-    port_id = [self.port, port_test]
-    """
     jobs = []
     ran = len(self.neighbor_list)
     self.port_list, self.server_list = self.init_server(ran)
+    self.client_list = self.init_clients(ran)
+    """
+    multiprocessing.log_to_stderr()
+    self.logger = multiprocessing.get_logger()
+    self.logger.setLevel(logging.INFO)
+    """
     for i in range(0, ran):
       ser = self.server_list[i]
       pids = self.port_list[i]
@@ -88,18 +82,30 @@ class node:
 
   def bprint(self, *args): print self, " ".join([str(x) for x in args])
 
+  def init_clients(self, ran):
+    c_list = []
+    for s in range(0, ran):
+      port = ((self.neighbor_list[s])*4000) + self.DHT_ID
+      st = "http://localhost:" + str(port) + "/"
+      client = xmlrpclib.ServerProxy(st)
+      # client.system.listMethods()
+      c_list.append(client)
+
+    return c_list
+
   def init_server(self, ran):
-    port_list = []
-    server_list = []
+    p_list = []
+    s_list = []
     for s in range(0, ran):
       # port = 8000 + self.DHT_ID + (s+100)
       port = (self.DHT_ID*4000) + self.neighbor_list[s]
-      port_list.append(port)
-      server = SimpleXMLRPCServer(("localhost", port))
-      server.register_function(self.flood, "flood")
-      server_list.append(server)
+      p_list.append(port)
 
-    return port_list, server_list
+      server = SimpleXMLRPCServer(("localhost", port))
+      server.register_function(self.process_message, "process_message")
+      s_list.append(server)
+
+    return p_list, s_list
 
   # Begin listening for incoming connections
   def begin_listen(self, server, port_id):
@@ -119,8 +125,12 @@ class node:
     # use this disco msg instead for later
     disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
-    return disco_msg
     # for each client in node, process message
+    print "Client List:", self.client_list
+    for c in self.client_list:
+      print "\n\nClient:", c
+      print "The answer is" % c.process_message(disco_msg, self.DHT_ID)
+
     """for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
       # will process message over network here
@@ -144,8 +154,9 @@ class node:
   def process_message(self, disco_msg, prev_hop) :
     # adds to dictionary for ids not dealth with
     # implicit can I decrypt, if ID = 6
-
+    return 1 == 1
     # decrease scope by 1, if 0 drop message
+    print "\n\n\n\n\n\n\n\n\n\n\n[Node ", self.DHT_ID, "] Process Message..."
     if disco_msg[1] <= 0:
       return
     else :
