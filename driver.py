@@ -58,11 +58,8 @@ def worker(node_id):
   x = node.node(nid, lst)
   print "Node Initialized:", x
 
-
-  if list is None:
-    return
-
   if nid is 1:
+    print "I'm gonna flood!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     x.flood()
   else:
     print "Waiting..."

@@ -88,7 +88,6 @@ class node:
       port = ((self.neighbor_list[s])*4000) + self.DHT_ID
       st = "http://localhost:" + str(port) + "/"
       client = xmlrpclib.ServerProxy(st)
-      # client.system.listMethods()
       c_list.append(client)
 
     return c_list
@@ -102,6 +101,7 @@ class node:
       p_list.append(port)
 
       server = SimpleXMLRPCServer(("localhost", port))
+      server.register_multicall_functions()
       server.register_function(self.process_message, "process_message")
       s_list.append(server)
 
@@ -118,7 +118,7 @@ class node:
       raise Exception, "Not a valid node for flooding, sorry"
       return
 
-    print "[Node ", self.DHT_ID, "] ", "Flooding..."
+    print "[Node ", self.DHT_ID, "] ", "Flooding!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!..."
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
@@ -126,10 +126,12 @@ class node:
     disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
     # for each client in node, process message
-    print "Client List:", self.client_list
+    # print "Client List:", self.client_list
     for c in self.client_list:
+      multicall = xmlrpclib.MultiCall(c)
       print "\n\nClient:", c
-      print "The answer is" % c.process_message(disco_msg, self.DHT_ID)
+      multicall.process_message(disco_msg, self.DHT_ID)
+    
 
     """for n in self.neighbor_list:
       print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
@@ -156,7 +158,7 @@ class node:
     # implicit can I decrypt, if ID = 6
     return 1 == 1
     # decrease scope by 1, if 0 drop message
-    print "\n\n\n\n\n\n\n\n\n\n\n[Node ", self.DHT_ID, "] Process Message..."
+    print "\n\n\n\n\n\n\n\n\n\n\n[Node ", self.DHT_ID, "] Process Message!!!!!!!!!!!!!!..."
     if disco_msg[1] <= 0:
       return
     else :
