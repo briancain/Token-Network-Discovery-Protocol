@@ -38,14 +38,15 @@ def main():
 # Node Class
 ############################################
 class node:
-  def __init__(self, dht_id, lst):
+  def __init__(self, dht_id):
     self.DHT_ID =  dht_id # id of node
     # Can only talk to neighbors (Array/List of DHT keys)
-    self.neighbor_list = lst # Just an example for now, list with node neighbors
+    self.neighbor_list = [] # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
     self.routing_table = dict() # a dictionary of Queues, key = dest id
     # Needs to be a hash table (key=DHT ID, value =routing token)
     self.prev_hops = dict() # hash table indexed by id and route
+    self.dups = dict()
     self.response = dict()
     self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
 
@@ -62,25 +63,24 @@ class node:
     self.bprint("hi", self.client, "\n\n\n")
     """
 
-    jobs = []
+    """jobs = []
     ran = len(self.neighbor_list)
     self.port_list, self.server_list = self.init_server(ran)
     self.client_list = self.init_clients(ran)
-    """
     multiprocessing.log_to_stderr()
     self.logger = multiprocessing.get_logger()
     self.logger.setLevel(logging.INFO)
-    """
     for i in range(0, ran):
       ser = self.server_list[i]
       pids = self.port_list[i]
       p = multiprocessing.Process(target=self.begin_listen, args=(ser, pids))
       jobs.append(p)
       p.start()
+    """
 
   def __str__(self): return str(self.DHT_ID)
 
-  def bprint(self, *args): print self, " ".join([str(x) for x in args])
+  def bprint(self, *args): print "[Node ", self, "] ", " ".join([str(x) for x in args])
 
   def init_clients(self, ran):
     c_list = []
@@ -118,26 +118,26 @@ class node:
       raise Exception, "Not a valid node for flooding, sorry"
       return
 
-    print "[Node ", self.DHT_ID, "] ", "Flooding!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!..."
+    self.bprint("Starting Flood!!!!!")
     # sequence number
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
     # use this disco msg instead for later
     disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
-    print "[Node ", self.DHT_ID, "] ", "Discovery Message: ", disco_msg
+    self.bprint("Discovery Message:", disco_msg)
     # for each client in node, process message
     # print "Client List:", self.client_list
-    for c in self.client_list:
+    """for c in self.client_list:
       multicall = xmlrpclib.MultiCall(c)
       print "\n\nClient:", c
       multicall.process_message(disco_msg, self.DHT_ID)
-    
+    """ 
 
-    """for n in self.neighbor_list:
-      print "Node ", self.DHT_ID, " sending disco_msg: ", n.DHT_ID
+    # use multi-process here????, shared memory of dups?????
+    for n in self.neighbor_list:
+      self.bprint("sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      n.process_message(disco_msg, self.DHT_ID)
-    """
+      n.process_message(disco_msg, self.DHT_ID)  
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
@@ -152,20 +152,22 @@ class node:
     else:
       return False
     
+  def check_dups(self, disco_msg, prev_hop):
+    pass
+
   # discovery message, and source
   def process_message(self, disco_msg, prev_hop) :
     # adds to dictionary for ids not dealth with
     # implicit can I decrypt, if ID = 6
-    return 1 == 1
     # decrease scope by 1, if 0 drop message
-    print "\n\n\n\n\n\n\n\n\n\n\n[Node ", self.DHT_ID, "] Process Message!!!!!!!!!!!!!!..."
+    self.bprint("Node:", self.DHT_ID, " in process message...")
     if disco_msg[1] <= 0:
       return
     else :
       disco_msg[1] -= 1
 
     if self.am_I_the_dest(disco_msg):
-      print "Destination Node. You've reached the destination"
+      bprint("Destination Node. You've reached the destination")
       return
     else :
       # keep track of previous hop, next hop, and sequence num
@@ -175,21 +177,21 @@ class node:
       # see if these variables match a previous message within dupe
       # otherwise don't flood
       for n in self.neighbor_list:
-        if not self.dups_seqnums: self.dups_seqnums = dict()
+        self.bprint("Within process message, looking at neighbor node id:", n.DHT_ID)
+        if not self.dups_seqnums: self.dups_seqnums = dict() # the same thing?
         self.dups_seqnums[disco_msg[0]] = True
-        if not self.dups: self.dups_seqnums = dict()
-        if n.DHT_ID == prev_hop: # this might be changed to an is if prev hop and DHT_ID are the same instance, rather than the same variable
-          # don't flood source with same message
-          continue
+        if bool([a for a in self.dups.values() if a != []]): self.dups_seqnums = dict() # the same thing?
+        if n.DHT_ID is prev_hop: # this might be changed to an is if prev hop and DHT_ID are the same instance, rather than the same variable
+          continue # don't flood source with same message
         else :
-          if not check_dups(disco_msg, prev_hop):
-            print "Node ", self.DHT_ID, " flooding: ", n.DHT_ID
+          if not self.check_dups(disco_msg, prev_hop):
+            self.bprint("Flooding neighbor", n.DHT_ID)
             ###FIXME???????
-            self.dups[(prev_hop, next_hop)] = True
+            self.dups[(prev_hop, n)] = True
             ###ASSUME NEXT_HOP is n??? or vice versa?
             n.process_message(disco_msg, self.DHT_ID)
           else:
-            print "Node ", self.DHT_ID, " got dup ", disco_msg, ", not flooding"
+            self.bprint("Got dupe ", disco_msg, ", not flooding...")
 
   # Return id of node
   def who_am_i(self):

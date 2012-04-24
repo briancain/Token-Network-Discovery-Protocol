@@ -21,7 +21,6 @@ def main() :
   print "CIS 598: Senior Project\nProgrammed by: Brian Cain"
   print "###############################\n\n"
 
-  # x_list = init_Node() # Get node objects
 
   # multi-processing area
   """jobs = []
@@ -29,23 +28,26 @@ def main() :
     p = multiprocessing.Process(target=worker, args=(i,))
     jobs.append(p)
     p.start()
-  """
+  
  
   jobs = []
-  """multiprocessing.log_to_stderr()
+  multiprocessing.log_to_stderr()
   logger = multiprocessing.get_logger()
   logger.setLevel(logging.INFO)
-  """
+  
   for i in range(15):
     p = Process(target=worker, args=(i,))
     jobs.append(p)
     p.start()
     # p.join()
+  """
 
-  """go = mem_inv_auth() # membership invitation authority says when it can flood
+  x_list = init_Node() # Get node objects
+
+  go = mem_inv_auth() # membership invitation authority says when it can flood
   if go == True :
     print "Flooding network.........."
-    x_list[0].flood()"""
+    x_list[0].flood()
 
 #############################################
 # Worker def
