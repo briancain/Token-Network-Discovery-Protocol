@@ -154,7 +154,7 @@ def init_Node() :
   x7.set_neighbors([x6, x13, x8, x12]) # 7: [6, 13, 8, 12]
   x8.set_neighbors([x7, x13, x12, x9]) # 8: [7, 13, 12, 9]
   x9.set_neighbors([x10, x11, x12, x8]) # 9: [10, 11, 12, 8]
-  x10.set_neighbors([x, x11, x9, x15]) # 10: [1, 11, 19, 15]
+  x10.set_neighbors([x, x11, x9, x15]) # 10: [1, 11, 9, 15]
   x11.set_neighbors([x, x12, x9, x10]) # 11: [1, 12, 9, 10]
   x12.set_neighbors([x11, x15, x14, x7, x9, x8]) # 12: [11, 15, 14, 7, 9, 8]
   x13.set_neighbors([x14, x6, x7, x8]) # 13: [14, 6, 7, 8]
