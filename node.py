@@ -141,7 +141,6 @@ class node:
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
-    self.bprint("am I the destination??")
     if msg[2][2] is 6 and 6 is self.DHT_ID: return True
     return False
 
@@ -172,19 +171,12 @@ class node:
     # debug = raw_input("Continue...")
     if disco_msg[1] < 1:
       self.bprint("Scope is 0, dropping message...")
-      exit()
+      exit() # temp fix
       return
     else :
       # Decrease scope, had to do some magic because of the collection.namedtuple variable
       disco_msg[1] -= 1
       self.bprint("Disco Message is after Decrease in Scope:", disco_msg)
-      """temp_scope = disco_msg.scope
-      print "Temp Scope:", temp_scope
-      temp_scope -= 1
-      print "Temp Scope After Subtraction:", temp_scope
-      disco_msg._replace(scope = temp_scope)
-      self.bprint("Disco Message:", disco_msg)
-      """
 
       if self.am_I_the_dest(disco_msg):
         bprint("Destination Node. You've reached the destination")
@@ -205,16 +197,17 @@ class node:
             self.dups_seqnums = dict()
             self.dups_seqnums[disco_msg[0]] = True
 
-          if bool([a for a in self.dups.values() if a != []]): self.dups_seqnums = dict() # the same thing?
           if n.DHT_ID is prev_hop: 
+            self.bprint("Neighbor DHT_ID == Previous Hop...continuing hopefully")
             continue # don't flood source with same message
           else :
             if not self.is_dups(prev_hop, n.DHT_ID):
               self.bprint("Not a dup, Flooding neighbor", n.DHT_ID)
               ###FIXME???????
               self.dups[(prev_hop, n.DHT_ID)] = True
+              self.bprint("Added dupes to dictionary", self.dups)
               ###ASSUME NEXT_HOP is n??? or vice versa?
-              # intp = raw_input("Continue.....")
+              intp = raw_input("Continue to next neighbor....")
               n.process_message(disco_msg, self.DHT_ID)
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
