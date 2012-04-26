@@ -1,6 +1,8 @@
-import Queue, random, collections, xmlrpclib, multiprocessing, logging
+#import Queue, random, collections, xmlrpclib, multiprocessing, logging
+import random, collections, xmlrpclib, multiprocessing, logging
 from collections import deque
-from SimpleXMLRPCServer import SimpleXMLRPCServer
+#from SimpleXMLRPCServer import SimpleXMLRPCServer
+from multiprocessing import Queue
 
 ###############################################################
 
@@ -80,7 +82,7 @@ class node:
 
   def __str__(self): return str(self.DHT_ID)
 
-  def bprint(self, *args): print "[Node ", self, "] ", " ".join([str(x) for x in args])
+  def bprint(self, *args): print "[Node", self, "] ", " ".join([str(x) for x in args])
 
   def init_clients(self, ran):
     c_list = []
@@ -108,9 +110,21 @@ class node:
     return p_list, s_list
 
   # Begin listening for incoming connections
-  def begin_listen(self, server, port_id):
-    print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
-    server.serve_forever()
+  #def begin_listen(self, server, port_id):
+  #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
+  #  server.serve_forever()
+
+  #this call should be renamed
+  def begin_listen(self, nid, q, q2):
+    self.to_me_queue = q
+    self.from_me_queue = q2
+    self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
+    while True:
+      m = self.to_me_queue.get() #this DOES block
+      msg, prev_hop = m
+      #this WILL NOT catch "please stop" messages
+      self.process_message(msg, prev_hop)
+
 
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
@@ -133,11 +147,11 @@ class node:
       multicall.process_message(disco_msg, self.DHT_ID)
     """ 
 
-    # use multi-process here????, shared memory of dups?????
     for n in self.neighbor_list:
       self.bprint("sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      n.process_message(disco_msg, self.DHT_ID)  
+      #n.process_message(disco_msg, self.DHT_ID, self.dups)  
+      self.from_me_queue.put((n, self.DHT_ID, disco_msg))
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
@@ -162,7 +176,7 @@ class node:
       return False
 
   # discovery message, and source
-  def process_message(self, disco_msg, prev_hop) :
+  def process_message(self, disco_msg, prev_hop, new_dups) :
     # adds to dictionary for ids not dealth with
     # implicit can I decrypt, if ID = 6
 
@@ -174,7 +188,7 @@ class node:
       exit() # temp fix
       return
     else :
-      # Decrease scope, had to do some magic because of the collection.namedtuple variable
+      # Decrease scope 
       disco_msg[1] -= 1
       self.bprint("Disco Message is after Decrease in Scope:", disco_msg)
 
@@ -182,6 +196,7 @@ class node:
         bprint("Destination Node. You've reached the destination")
         return
       else :
+        self.dups = new_dups
         # keep track of previous hop, next hop, and sequence num
         ###self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
         ###self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
@@ -208,7 +223,8 @@ class node:
               self.bprint("Added dupes to dictionary", self.dups)
               ###ASSUME NEXT_HOP is n??? or vice versa?
               intp = raw_input("Continue to next neighbor....")
-              n.process_message(disco_msg, self.DHT_ID)
+              #n.process_message(disco_msg, self.DHT_ID, self.dups)
+              self.queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
 

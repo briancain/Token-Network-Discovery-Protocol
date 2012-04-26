@@ -28,54 +28,59 @@ def main() :
     p = multiprocessing.Process(target=worker, args=(i,))
     jobs.append(p)
     p.start()
+  """
   
  
-  jobs = []
+  jobs = dict()
   multiprocessing.log_to_stderr()
   logger = multiprocessing.get_logger()
   logger.setLevel(logging.INFO)
+  special_source_node_bad_design = None
   
   for i in range(15):
-    p = Process(target=worker, args=(i,))
-    jobs.append(p)
+    nid = i+1
+    print "Main:", "Initializing Node:", nid
+    x = node.node(nid)
+    if nid is 1:
+      special_source_node_bad_design = x
+    a_to = Queue() #name my vars!!
+    b_from = Queue() #name my vars!!
+    p = Process(target=x.begin_listen, args=(i,a_to,b_from))
+    jobs[nid] = (x, a_to, b_from, p) #Node (x) is first element (NOT p)
     p.start()
-    # p.join()
-  """
 
-  x_list = init_Node() # Get node objects
+  for i in range(15):
+    nid = i+1
+    for j in jobs.values():
+      #use setter!!
+      j[0].neighbor_list = init_neighbors(nid, jobs)
 
-  go = mem_inv_auth() # membership invitation authority says when it can flood
-  if go == True :
+  # x_list = init_Node() # Get node objects
+
+  #if go == True :
+  #  print "Flooding network.........."
+  #  x_list[0].flood()
+
+  if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
-    x_list[0].flood()
+    special_source_node_bad_design.flood()
 
-#############################################
-# Worker def
-#############################################
-def worker(node_id):
-  """thread worker function"""
-  nid = node_id + 1
-  print "Worker:", node_id , "Initializing Node:", nid
-  lst = init_neighbors(nid)
-  x = node.node(nid, lst)
-  print "Node Initialized:", x
+  while True:
+    for j in jobs.values():
+      q = j[2]
+      msg = q.get_nowait() #will spin CPU, need something blocking (later)
+      dst_id, src_id, payload = msg
+      jobs[dst_id][1].put(payload, src_id)
 
-  if nid is 1:
-    print "I'm gonna flood!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    x.flood()
-  else:
-    print "Waiting..."
 
-  # x.set_neighbors(lst)
-  # print "Node ", x.who_am_i(), "Neighbor List:", x.neighbor_list
+  #we never expect to get here
+  for p in jobs.values(): p[3].join()
 
-  # x.begin_listen()
-  return
 
 ###########################################
 # Initialize Neighbor depending on the ID
 ###########################################
-def init_neighbors(node_id):
+def init_neighbors(node_id, j):
   """How will this work over the socket server
       - Will have to pass instance of node object to create physical neighbors
 
@@ -88,35 +93,35 @@ def init_neighbors(node_id):
   """
 
   if node_id == 1:
-    list_neigh = [10, 11, 15, 2]
+    list_neigh = [j[10][0], j[11][0], j[15][0], j[2][0]]
   elif node_id == 2:
-    list_neigh = [1, 15, 14, 3]
+    list_neigh = [j[1][0], j[15][0], j[14][0], j[3][0]]
   elif node_id == 3:
-    list_neigh = [2, 14, 5, 4]
+    list_neigh = [j[2][0], j[14][0], j[5][0], j[4][0]]
   elif node_id == 4:
-    list_neigh = [3, 14, 5, 6]
+    list_neigh = [j[3][0], j[14][0], j[5][0], j[6][0]]
   elif node_id == 5:
-    list_neigh = [14, 3, 4, 6]
+    list_neigh = [j[14][0], j[3][0], j[4][0], j[6][0]]
   elif node_id == 6:
-    list_neigh = [4, 5, 13, 7]
+    list_neigh = [j[4][0], j[5][0], j[13][0], j[7][0]]
   elif node_id == 7:
-    list_neigh = [6, 13, 8, 12]
+    list_neigh = [j[6][0], j[13][0], j[8][0], j[12][0]]
   elif node_id == 8:
-    list_neigh = [7, 13, 12, 9]
+    list_neigh = [j[7][0], j[13][0], j[12][0], j[9][0]]
   elif node_id == 9:
-    list_neigh = [10, 11, 12, 8]
+    list_neigh = [j[10][0], j[11][0], j[12][0], j[8][0]]
   elif node_id == 10:
-    list_neigh = [1, 11, 9, 15]
+    list_neigh = [j[1][0], j[11][0], j[9][0], j[15][0]]
   elif node_id == 11:
-    list_neigh = [1, 12, 9, 10]
+    list_neigh = [j[1][0], j[12][0], j[9][0], j[10][0]]
   elif node_id == 12:
-    list_neigh = [11, 15, 14, 7, 9, 8]
+    list_neigh = [j[11][0], j[15][0], j[14][0], j[7][0], j[9][0], j[8][0]]
   elif node_id == 13:
-    list_neigh = [14, 6, 7, 8]
+    list_neigh = [j[14][0], j[6][0], j[7][0], j[8][0]]
   elif node_id == 14:
-    list_neigh = [2, 3, 4, 5, 13, 12, 15]
+    list_neigh = [j[2][0], j[3][0], j[4][0], j[5][0], j[13][0], j[12][0], j[15][0]]
   elif node_id == 15:
-    list_neigh = [1, 2, 14, 12, 10]
+    list_neigh = [j[1][0], j[2][0], j[14][0], j[12][0], j[10][0]]
   else :
     print "Invalid Node ID"
     return None
