@@ -39,12 +39,15 @@ def main() :
   for i in range(15):
     nid = i+1
     print "Main: Initializing Node:", nid
+    queue_to = Queue() 
+    queue_from = Queue()
+    # x = node.node(nid, queue_to, queue_from)
     x = node.node(nid)
     if nid is 1:
       special_source_node_bad_design = x
-    queue_to = Queue() 
-    queue_from = Queue() 
+     
     p = Process(target=x.run_node, args=(i,queue_to,queue_from))
+    # p = Process(target=x.run_node, args=(i,))
     jobs[nid] = (x, queue_to, queue_from, p) #Node (x) is first element (NOT p)
     p.start()
 
@@ -67,7 +70,7 @@ def main() :
   #  print "Flooding network.........."
   #  x_list[0].flood()
 
-  print "[DRIVER] All of the job states before flooding:", jobs[1]
+  print "[DRIVER] All of the job states before flooding:", jobs
   if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
     # time.sleep(3)

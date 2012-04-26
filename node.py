@@ -40,6 +40,7 @@ def main():
 # Node Class
 ############################################
 class node:
+  # def __init__(self, dht_id, q, q2):
   def __init__(self, dht_id):
     self.DHT_ID =  dht_id # id of node
     # Can only talk to neighbors (Array/List of DHT keys)
@@ -50,9 +51,11 @@ class node:
     self.prev_hops = dict() # hash table indexed by id and route
     self.dups = dict()
     self.response = dict()
-    self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
-    self.from_me_queue = Queue()
-    # is not??
+    # self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
+
+    # self.to_me_queue = q
+    # self.from_me_queue = q2
+
     if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
       self.R = deque() # route descriptor
@@ -114,7 +117,7 @@ class node:
     seq_numz = self.z + 10000
     disco_msg = [seq_numz, self.scope, self.IBE] # only built by source
     # use this disco msg instead for later
-    disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
+    # disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     self.bprint("Discovery Message:", disco_msg)
     # for each client in node, process message
     # print "Client List:", self.client_list
@@ -130,13 +133,13 @@ class node:
       #n.process_message(disco_msg, self.DHT_ID, self.dups)
       self.from_me_queue.put((n, self.DHT_ID, disco_msg))
 
-
   # Begin listening for incoming connections
   #def begin_listen(self, server, port_id):
   #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
   #  server.serve_forever()
 
   def run_node(self, nid, q, q2):
+  # def run_node(self, nid):
     self.to_me_queue = q
     self.from_me_queue = q2
     self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
@@ -145,7 +148,6 @@ class node:
       msg, prev_hop = m
       #this WILL NOT catch "please stop" messages
       self.process_message(msg, prev_hop)
-
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
@@ -159,7 +161,7 @@ class node:
       return True
     else:
       return False
-    
+   
   def is_dups(self, prev_hop, dht_id):
     self.bprint("Checking Dups")
     self.bprint(self.dups)
