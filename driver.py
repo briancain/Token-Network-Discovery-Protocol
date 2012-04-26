@@ -29,8 +29,7 @@ def main() :
     jobs.append(p)
     p.start()
   """
-  
- 
+
   jobs = dict()
   multiprocessing.log_to_stderr()
   logger = multiprocessing.get_logger()
@@ -39,21 +38,28 @@ def main() :
   
   for i in range(15):
     nid = i+1
-    print "Main:", "Initializing Node:", nid
+    print "Main: Initializing Node:", nid
     x = node.node(nid)
     if nid is 1:
       special_source_node_bad_design = x
-    a_to = Queue() #name my vars!!
-    b_from = Queue() #name my vars!!
-    p = Process(target=x.begin_listen, args=(i,a_to,b_from))
-    jobs[nid] = (x, a_to, b_from, p) #Node (x) is first element (NOT p)
+    queue_to = Queue() 
+    queue_from = Queue() 
+    p = Process(target=x.run_node, args=(i,queue_to,queue_from))
+    jobs[nid] = (x, queue_to, queue_from, p) #Node (x) is first element (NOT p)
     p.start()
 
   for i in range(15):
     nid = i+1
     for j in jobs.values():
       #use setter!!
-      j[0].neighbor_list = init_neighbors(nid, jobs)
+      # j[0].neighbor_list = init_neighbors(nid, jobs)
+      lst = init_neighbors(nid, jobs)
+      if list is None:
+        print "List is null, failure"
+        exit()
+      else:
+        j[0].set_neighbors(lst)
+        
 
   # x_list = init_Node() # Get node objects
 
@@ -61,16 +67,17 @@ def main() :
   #  print "Flooding network.........."
   #  x_list[0].flood()
 
+  print "[DRIVER] All of the job states before flooding:", jobs
   if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
-    special_source_node_bad_design.flood()
+    special_source_node_bad_design = x
 
   while True:
     for j in jobs.values():
-      q = j[2]
-      msg = q.get_nowait() #will spin CPU, need something blocking (later)
+      q = j[2] # j[2] is from queue
+      msg = q.get_no_wait() #will spin CPU, need something blocking (later)
       dst_id, src_id, payload = msg
-      jobs[dst_id][1].put(payload, src_id)
+      jobs[dst_id][1].put(payload, src_id) # j[1] is to queue
 
 
   #we never expect to get here
@@ -81,17 +88,7 @@ def main() :
 # Initialize Neighbor depending on the ID
 ###########################################
 def init_neighbors(node_id, j):
-  """How will this work over the socket server
-      - Will have to pass instance of node object to create physical neighbors
-
-      pickled_string = pickle.dumps(python object)
-      send over socket server
-      returned_string = pickle.loads(data)
-      repr(returned_string)
-
-      port id = 10000 + dht_id
-  """
-
+  
   if node_id == 1:
     list_neigh = [j[10][0], j[11][0], j[15][0], j[2][0]]
   elif node_id == 2:

@@ -59,12 +59,6 @@ class node:
       self.z = random.randint(1001, 1010) # random number
       self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
 
-    """print "[Node ", self.DHT_ID, "] ", self.client, "\n"
-    print self
-    print self, self.client, "\n"
-    self.bprint("hi", self.client, "\n\n\n")
-    """
-
     """jobs = []
     ran = len(self.neighbor_list)
     self.port_list, self.server_list = self.init_server(ran)
@@ -114,8 +108,7 @@ class node:
   #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
   #  server.serve_forever()
 
-  #this call should be renamed
-  def begin_listen(self, nid, q, q2):
+  def run_node(self, nid, q, q2):
     self.to_me_queue = q
     self.from_me_queue = q2
     self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
@@ -150,7 +143,7 @@ class node:
     for n in self.neighbor_list:
       self.bprint("sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      #n.process_message(disco_msg, self.DHT_ID, self.dups)  
+      #n.process_message(disco_msg, self.DHT_ID, self.dups)
       self.from_me_queue.put((n, self.DHT_ID, disco_msg))
 
   # Is this node the destination?
