@@ -67,15 +67,17 @@ def main() :
   #  print "Flooding network.........."
   #  x_list[0].flood()
 
-  print "[DRIVER] All of the job states before flooding:", jobs
+  print "[DRIVER] All of the job states before flooding:", jobs[1]
   if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
-    special_source_node_bad_design = x
+    # time.sleep(3)
+    # special_source_node_bad_design = x
+    jobs[1][0].flood()
 
   while True:
     for j in jobs.values():
       q = j[2] # j[2] is from queue
-      msg = q.get_no_wait() #will spin CPU, need something blocking (later)
+      msg = q.get_nowait() #will spin CPU, need something blocking (later)
       dst_id, src_id, payload = msg
       jobs[dst_id][1].put(payload, src_id) # j[1] is to queue
 

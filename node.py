@@ -51,7 +51,7 @@ class node:
     self.dups = dict()
     self.response = dict()
     self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
-
+    self.from_me_queue = Queue()
     # is not??
     if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
@@ -103,22 +103,6 @@ class node:
 
     return p_list, s_list
 
-  # Begin listening for incoming connections
-  #def begin_listen(self, server, port_id):
-  #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
-  #  server.serve_forever()
-
-  def run_node(self, nid, q, q2):
-    self.to_me_queue = q
-    self.from_me_queue = q2
-    self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
-    while True:
-      m = self.to_me_queue.get() #this DOES block
-      msg, prev_hop = m
-      #this WILL NOT catch "please stop" messages
-      self.process_message(msg, prev_hop)
-
-
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
     if self.DHT_ID is not 1:
@@ -141,10 +125,27 @@ class node:
     """ 
 
     for n in self.neighbor_list:
-      self.bprint("sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
+      self.bprint("Sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
       #n.process_message(disco_msg, self.DHT_ID, self.dups)
       self.from_me_queue.put((n, self.DHT_ID, disco_msg))
+
+
+  # Begin listening for incoming connections
+  #def begin_listen(self, server, port_id):
+  #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
+  #  server.serve_forever()
+
+  def run_node(self, nid, q, q2):
+    self.to_me_queue = q
+    self.from_me_queue = q2
+    self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
+    while True:
+      m = self.to_me_queue.get() #this DOES block
+      msg, prev_hop = m
+      #this WILL NOT catch "please stop" messages
+      self.process_message(msg, prev_hop)
+
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
