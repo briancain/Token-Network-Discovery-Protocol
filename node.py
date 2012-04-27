@@ -125,7 +125,7 @@ class node:
       multicall = xmlrpclib.MultiCall(c)
       print "\n\nClient:", c
       multicall.process_message(disco_msg, self.DHT_ID)
-    """ 
+    """
 
     for n in self.neighbor_list:
       self.bprint("Sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
@@ -138,6 +138,11 @@ class node:
   #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
   #  server.serve_forever()
 
+  def who_nodes(self):
+    print "Node Neighbors:"
+    for n in self.neighbor_list:
+      n.bprint("This is the special print")
+
   def run_node(self, nid, q, q2):
   # def run_node(self, nid):
     self.to_me_queue = q
@@ -145,9 +150,17 @@ class node:
     self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
     while True:
       m = self.to_me_queue.get() #this DOES block
-      msg, prev_hop = m
-      #this WILL NOT catch "please stop" messages
-      self.process_message(msg, prev_hop)
+      if m == "STOP": return
+      elif m == "FLOOD":
+        self.bprint("Will now flood")
+        self.flood()
+      elif m[0] == "LIST":
+        self.bprint("Setting Neighbors", m[1])
+        self.set_neighbors(m[1])
+        self.who_nodes()
+      else:
+        msg, prev_hop = m
+        self.process_message(msg, prev_hop)
 
   # Is this node the destination?
   def am_I_the_dest(self, msg):
@@ -157,11 +170,11 @@ class node:
   # call before figuring out which class I need to use
   # during the flood
   def am_I_the_node(self, dest_id):
-    if dest_id is self.DHT_ID: 
+    if dest_id is self.DHT_ID:
       return True
     else:
       return False
-   
+
   def is_dups(self, prev_hop, dht_id):
     self.bprint("Checking Dups")
     self.bprint(self.dups)

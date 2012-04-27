@@ -35,52 +35,45 @@ def main() :
   logger = multiprocessing.get_logger()
   logger.setLevel(logging.INFO)
   special_source_node_bad_design = None
-  
+
   for i in range(15):
     nid = i+1
     print "Main: Initializing Node:", nid
-    queue_to = Queue() 
+    queue_to = Queue()
     queue_from = Queue()
-    # x = node.node(nid, queue_to, queue_from)
     x = node.node(nid)
     if nid is 1:
       special_source_node_bad_design = x
-     
+
     p = Process(target=x.run_node, args=(i,queue_to,queue_from))
-    # p = Process(target=x.run_node, args=(i,))
     jobs[nid] = (x, queue_to, queue_from, p) #Node (x) is first element (NOT p)
     p.start()
+    while not p.is_alive(): time.sleep(0.1) #make sure it's constructed
 
-  for i in range(15):
-    nid = i+1
-    for j in jobs.values():
-      #use setter!!
-      # j[0].neighbor_list = init_neighbors(nid, jobs)
-      lst = init_neighbors(nid, jobs)
-      if list is None:
-        print "List is null, failure"
-        exit()
-      else:
-        j[0].set_neighbors(lst)
-        
+	#print "Driver initialized node", x, "with Queues", queue_from, queue_to
 
-  # x_list = init_Node() # Get node objects
+  for j in jobs:
+    lst = init_neighbors(j, jobs)
+    pass_list = ["LIST",  lst]
+    if lst is None:
+      print "List is null, failure"
+      exit()
+    else:
+      jobs[j][0].set_neighbors(lst) # this will fail, pass list through Queue
+      jobs[j][1].put(pass_list)
 
-  #if go == True :
-  #  print "Flooding network.........."
-  #  x_list[0].flood()
 
   print "[DRIVER] All of the job states before flooding:", jobs
   if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
     # time.sleep(3)
-    # special_source_node_bad_design = x
-    jobs[1][0].flood()
+    jobs[1][1].put("FLOOD")
 
   while True:
     for j in jobs.values():
       q = j[2] # j[2] is from queue
-      msg = q.get_nowait() #will spin CPU, need something blocking (later)
+      try: msg = q.get_nowait() #will spin CPU, need something blocking (later)
+      except: continue
       dst_id, src_id, payload = msg
       jobs[dst_id][1].put(payload, src_id) # j[1] is to queue
 
@@ -93,7 +86,7 @@ def main() :
 # Initialize Neighbor depending on the ID
 ###########################################
 def init_neighbors(node_id, j):
-  
+
   if node_id == 1:
     list_neigh = [j[10][0], j[11][0], j[15][0], j[2][0]]
   elif node_id == 2:
