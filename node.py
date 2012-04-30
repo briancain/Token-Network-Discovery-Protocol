@@ -198,7 +198,7 @@ class node:
       self.bprint("Disco Message is after Decrease in Scope:", disco_msg)
 
       if self.am_I_the_dest(disco_msg):
-        bprint("Destination Node. You've reached the destination")
+        self.bprint("Destination Node. You've reached the destination")
         return
       else :
         self.bprint("I am not the destination, going to process message")
