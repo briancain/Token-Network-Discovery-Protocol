@@ -119,29 +119,25 @@ class node:
     # use this disco msg instead for later
     # disco_msg_test = self.msg_coll(seqnum=seq_numz, scope=self.scope, ibe=self.IBE)
     self.bprint("Discovery Message:", disco_msg)
-    # for each client in node, process message
-    # print "Client List:", self.client_list
-    """for c in self.client_list:
-      multicall = xmlrpclib.MultiCall(c)
-      print "\n\nClient:", c
-      multicall.process_message(disco_msg, self.DHT_ID)
-    """
 
     for n in self.neighbor_list:
       self.bprint("Sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      #n.process_message(disco_msg, self.DHT_ID, self.dups)
-      self.from_me_queue.put((n, self.DHT_ID, disco_msg))
+      n.process_message(disco_msg, self.DHT_ID)
+      #self.from_me_queue.put((n, self.DHT_ID, disco_msg))
 
   # Begin listening for incoming connections
   #def begin_listen(self, server, port_id):
   #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
   #  server.serve_forever()
 
-  def who_nodes(self):
-    print "Node Neighbors:"
+  def test_fun(self, lst):
     for n in self.neighbor_list:
-      n.bprint("This is the special print")
+      n.bprint("Here are the tests", lst)
+
+  def who_nodes(self, lst):
+    print "Node Neighbors:"
+    self.bprint(self.neighbor_list)
 
   def run_node(self, nid, q, q2):
   # def run_node(self, nid):
@@ -157,7 +153,6 @@ class node:
       elif m[0] == "LIST":
         self.bprint("Setting Neighbors", m[1])
         self.set_neighbors(m[1])
-        self.who_nodes()
       else:
         msg, prev_hop = m
         self.process_message(msg, prev_hop)
@@ -185,7 +180,7 @@ class node:
       return False
 
   # discovery message, and source
-  def process_message(self, disco_msg, prev_hop, new_dups) :
+  def process_message(self, disco_msg, prev_hop) :
     # adds to dictionary for ids not dealth with
     # implicit can I decrypt, if ID = 6
 
@@ -205,7 +200,7 @@ class node:
         bprint("Destination Node. You've reached the destination")
         return
       else :
-        self.dups = new_dups
+        self.bprint("I am not the destination, going to process message")
         # keep track of previous hop, next hop, and sequence num
         ###self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
         ###self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
@@ -231,9 +226,9 @@ class node:
               self.dups[(prev_hop, n.DHT_ID)] = True
               self.bprint("Added dupes to dictionary", self.dups)
               ###ASSUME NEXT_HOP is n??? or vice versa?
-              intp = raw_input("Continue to next neighbor....")
-              #n.process_message(disco_msg, self.DHT_ID, self.dups)
-              self.queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
+              # intp = raw_input("Continue to next neighbor....")
+              n.process_message(disco_msg, self.DHT_ID)
+              # self.queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
 
