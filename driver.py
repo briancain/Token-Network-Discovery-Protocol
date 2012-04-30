@@ -75,7 +75,6 @@ def main() :
       try: msg = q.get_nowait() #will spin CPU, need something blocking (later)
       except: continue
       dst_id, src_id, payload = msg
-      print "\n\n\nDestination ID:", dst_id, "Source ID", src_id, "Payload:", payload
       msg_send = [payload, src_id]
       jobs[dst_id][1].put(msg_send) # j[1] is to queue
 

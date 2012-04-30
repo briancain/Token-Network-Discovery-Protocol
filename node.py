@@ -143,7 +143,6 @@ class node:
   # def run_node(self, nid):
     self.to_me_queue = q
     self.from_me_queue = q2
-    self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
     while True:
       m = self.to_me_queue.get() #this DOES block
       self.bprint("This is message:", m)
