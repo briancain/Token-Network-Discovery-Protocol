@@ -123,8 +123,8 @@ class node:
     for n in self.neighbor_list:
       self.bprint("Sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      n.process_message(disco_msg, self.DHT_ID)
-      #self.from_me_queue.put((n, self.DHT_ID, disco_msg))
+      # n.process_message(disco_msg, self.DHT_ID)
+      self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
 
   # Begin listening for incoming connections
   #def begin_listen(self, server, port_id):
@@ -146,6 +146,7 @@ class node:
     self.bprint("Started listening with two Queues: Q1: ", self.to_me_queue, " Q2:", self.from_me_queue)
     while True:
       m = self.to_me_queue.get() #this DOES block
+      self.bprint("This is message:", m)
       if m == "STOP": return
       elif m == "FLOOD":
         self.bprint("Will now flood")
@@ -222,13 +223,12 @@ class node:
           else :
             if not self.is_dups(prev_hop, n.DHT_ID):
               self.bprint("Not a dup, Flooding neighbor", n.DHT_ID)
-              ###FIXME???????
               self.dups[(prev_hop, n.DHT_ID)] = True
               self.bprint("Added dupes to dictionary", self.dups)
               ###ASSUME NEXT_HOP is n??? or vice versa?
               # intp = raw_input("Continue to next neighbor....")
-              n.process_message(disco_msg, self.DHT_ID)
-              # self.queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
+              # n.process_message(disco_msg, self.DHT_ID)
+              self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
 

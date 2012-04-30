@@ -59,7 +59,7 @@ def main() :
       print "List is null, failure"
       exit()
     else:
-      jobs[j][0].set_neighbors(lst) # this will fail, pass list through Queue
+      # jobs[j][0].set_neighbors(lst) # this will fail, pass list through Queue
       jobs[j][1].put(pass_list)
 
 
@@ -75,7 +75,9 @@ def main() :
       try: msg = q.get_nowait() #will spin CPU, need something blocking (later)
       except: continue
       dst_id, src_id, payload = msg
-      jobs[dst_id][1].put(payload, src_id) # j[1] is to queue
+      print "\n\n\nDestination ID:", dst_id, "Source ID", src_id, "Payload:", payload
+      msg_send = [payload, src_id]
+      jobs[dst_id][1].put(msg_send) # j[1] is to queue
 
 
   #we never expect to get here
