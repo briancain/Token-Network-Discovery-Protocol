@@ -145,7 +145,6 @@ class node:
     self.from_me_queue = q2
     while True:
       m = self.to_me_queue.get() #this DOES block
-      self.bprint("This is message:", m)
       if m == "STOP": return
       elif m == "FLOOD":
         self.bprint("Will now flood")

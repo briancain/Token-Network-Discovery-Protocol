@@ -63,7 +63,7 @@ def main() :
       jobs[j][1].put(pass_list)
 
 
-  print "[DRIVER] All of the job states before flooding:", jobs
+  # print "[DRIVER] All of the job states before flooding:", jobs
   if mem_inv_auth(): # membership invitation authority says when it can flood
     print "Flooding network.........."
     # time.sleep(3)
