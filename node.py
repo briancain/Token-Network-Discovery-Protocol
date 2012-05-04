@@ -170,10 +170,7 @@ class node:
       return False
 
   def is_dups(self, prev_hop, dht_id):
-    self.bprint("Checking Dups")
-    self.bprint(self.dups)
     if (prev_hop, dht_id) in self.dups:
-      self.bprint("Dupe was found")
       return True
     else :
       return False
@@ -216,7 +213,7 @@ class node:
             self.dups_seqnums[disco_msg[0]] = True
 
           if n.DHT_ID is prev_hop: 
-            self.bprint("Neighbor DHT_ID == Previous Hop...continuing hopefully")
+            self.bprint("Neighbor DHT_ID == Previous Hop...continuing on...")
             continue # don't flood source with same message
           else :
             if not self.is_dups(prev_hop, n.DHT_ID):
