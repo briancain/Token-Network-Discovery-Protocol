@@ -1,7 +1,5 @@
-#import Queue, random, collections, xmlrpclib, multiprocessing, logging
 import random, collections, xmlrpclib, multiprocessing, logging
 from collections import deque
-#from SimpleXMLRPCServer import SimpleXMLRPCServer
 from multiprocessing import Queue
 
 ###############################################################
@@ -15,22 +13,7 @@ from multiprocessing import Queue
 ###############################################################
 
 """ Todo:
-      * Interprocess communication, with only forward flooding working
-        - Intermediates will keep track of: Prev hop, next hop, and sequence num
-       - Send objects over python by using pickling, or perhaps json
-"""
-
-"""
- # call before figuring out which class I need to use
-  # during the flood
-#def am_I_the_node(self, msg):
-##CAN I DECRYPT THE NEXT ROUTE TOKEN?
-#    if msg[2][2] = self.DHT_ID: return True
-#    return False
-
-def am_I_the_dest(self, msg):
-  if msg[2][2] == 6 and 6 == self.DHT_ID: return True
-  return False
+      * Construct Route Tokens
 """
 
 def main():
@@ -53,58 +36,15 @@ class node:
     self.response = dict()
     # self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
 
-    # self.to_me_queue = q
-    # self.from_me_queue = q2
-
     if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
       self.R = deque() # route descriptor
       self.z = random.randint(1001, 1010) # random number
       self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
 
-    """jobs = []
-    ran = len(self.neighbor_list)
-    self.port_list, self.server_list = self.init_server(ran)
-    self.client_list = self.init_clients(ran)
-    multiprocessing.log_to_stderr()
-    self.logger = multiprocessing.get_logger()
-    self.logger.setLevel(logging.INFO)
-    for i in range(0, ran):
-      ser = self.server_list[i]
-      pids = self.port_list[i]
-      p = multiprocessing.Process(target=self.begin_listen, args=(ser, pids))
-      jobs.append(p)
-      p.start()
-    """
-
   def __str__(self): return str(self.DHT_ID)
 
   def bprint(self, *args): print "[Node", self, "] ", " ".join([str(x) for x in args])
-
-  def init_clients(self, ran):
-    c_list = []
-    for s in range(0, ran):
-      port = ((self.neighbor_list[s])*4000) + self.DHT_ID
-      st = "http://localhost:" + str(port) + "/"
-      client = xmlrpclib.ServerProxy(st)
-      c_list.append(client)
-
-    return c_list
-
-  def init_server(self, ran):
-    p_list = []
-    s_list = []
-    for s in range(0, ran):
-      # port = 8000 + self.DHT_ID + (s+100)
-      port = (self.DHT_ID*4000) + self.neighbor_list[s]
-      p_list.append(port)
-
-      server = SimpleXMLRPCServer(("localhost", port))
-      server.register_multicall_functions()
-      server.register_function(self.process_message, "process_message")
-      s_list.append(server)
-
-    return p_list, s_list
 
   # Membership & Invitation Authority will initiate flooding technique
   def flood(self):
@@ -125,11 +65,6 @@ class node:
       # will process message over network here
       # n.process_message(disco_msg, self.DHT_ID)
       self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
-
-  # Begin listening for incoming connections
-  #def begin_listen(self, server, port_id):
-  #  print "[Node ", self.DHT_ID, "] ", "Listening on", port_id, "....."
-  #  server.serve_forever()
 
   def test_fun(self, lst):
     for n in self.neighbor_list:

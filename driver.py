@@ -22,14 +22,6 @@ def main() :
   print "###############################\n\n"
 
 
-  # multi-processing area
-  """jobs = []
-  for i in range(15):
-    p = multiprocessing.Process(target=worker, args=(i,))
-    jobs.append(p)
-    p.start()
-  """
-
   jobs = dict()
   multiprocessing.log_to_stderr()
   logger = multiprocessing.get_logger()
@@ -193,19 +185,6 @@ def load():
     sys.stdout.flush()
     time.sleep(0.2)
   print "\b\b done!"
-
-##############################################################
-# Prints network topology with neighbor list
-##############################################################
-def print_network(x_list):
-  print "\n"
-  for x in x_list:
-    print "Node ID: ", x.who_am_i()
-    print "[",
-    for xn in x.neighbor_list:
-      print xn.who_am_i(), ",",
-    print "]"
-  print "\n"
 
 ###################################################
 # Membership and Invitation Authority will say
