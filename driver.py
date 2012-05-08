@@ -66,9 +66,19 @@ def main() :
       q = j[2] # j[2] is from queue
       try: msg = q.get_nowait() #will spin CPU, need something blocking (later)
       except: continue
-      dst_id, src_id, payload = msg
-      msg_send = [payload, src_id]
-      jobs[dst_id][1].put(msg_send) # j[1] is to queue
+      if msg[0] == "CONSTRUCT":
+        print "\n\n\n\n\n\n\n\nCONSTRUCT THE TOKENS"
+        # "CONSTRUCT", destination id, source id, queue
+        dst_id = msg[1]
+        src_id = msg[2]
+        que = msg[3]
+        # source will be None when nid = 6 is sending message
+        msg_send = [msg[0], src_id, que]
+        jobs[dst_id][1].put(msg_send)
+      else:
+        dst_id, src_id, payload = msg
+        msg_send = [payload, src_id]
+        jobs[dst_id][1].put(msg_send) # j[1] is to queue
 
 
   #we never expect to get here

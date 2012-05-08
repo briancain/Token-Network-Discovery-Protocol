@@ -89,6 +89,12 @@ class node:
       elif m[0] == "LIST":
         self.bprint("Setting Neighbors", m[1])
         self.set_neighbors(m[1])
+      elif m[0] == "CONSTRUCT":
+        self.bprint("Constructing Route Tokens")
+        # "CONSTRUCT", source id, queue
+        source = m[1]
+        que = m[2]
+        self.construct_token(que, source) 
       else:
         msg, prev_hop = m
         self.process_message(msg, prev_hop)
@@ -131,8 +137,8 @@ class node:
 
       if self.am_I_the_dest(disco_msg):
         self.bprint("\n\n\n\n\n\n\n\n\n\nDestination Node. You've reached the destination")
-        self.construct_token()
-        return
+        que = deque()
+        self.construct_token(que, self.DHT_ID)
       else :
         self.bprint("I am not the destination, going to process message")
         # keep track of previous hop, next hop, and sequence num
@@ -166,15 +172,24 @@ class node:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
 
   # constructs route tokens
-  def construct_token(self):
+  def construct_token(self, que, source):
     """
-      Put ID onto queue, then send to neighbors
-      Might have to modify from me queue to look for construction
+      Must use dupes some how here
     """
-    que_const = deque()
-    que_const.append(self.DHT_ID)
-    self.bprint("This should only have id 6:", que_const)
-    return
+    if self.DHT_ID is 1:
+      self.route_queue.append(que)
+      self.bprint("We have reached the source, adding token to Queue...", self.route_queue)
+    else:
+      for n in self.neighbor_list:
+        if n.DHT_ID == source: # don't construct again from source
+          self.bprint("Don't send construction back to source...continuing on...")
+          continue
+        else:
+          self.bprint("Sending route token to neighbors:", n.DHT_ID)
+          que.append(self.DHT_ID)
+          self.bprint("Added to queue:", que)
+          msg = ["CONSTRUCT", n.DHT_ID, self.DHT_ID, que]
+          self.from_me_queue.put(msg)
 
   # Return id of node
   def who_am_i(self):
