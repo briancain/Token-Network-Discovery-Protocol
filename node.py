@@ -41,6 +41,7 @@ class node:
       self.R = deque() # route descriptor
       self.z = random.randint(1001, 1010) # random number
       self.IBE = (self.z, self.R, 6) # object to say if node is DHT node we're looking for
+      self.route_queue = deque()
 
   def __str__(self): return str(self.DHT_ID)
 
@@ -74,6 +75,7 @@ class node:
     print "Node Neighbors:"
     self.bprint(self.neighbor_list)
 
+  # runs the node
   def run_node(self, nid, q, q2):
   # def run_node(self, nid):
     self.to_me_queue = q
@@ -129,6 +131,7 @@ class node:
 
       if self.am_I_the_dest(disco_msg):
         self.bprint("\n\n\n\n\n\n\n\n\n\nDestination Node. You've reached the destination")
+        self.construct_token()
         return
       else :
         self.bprint("I am not the destination, going to process message")
@@ -161,6 +164,17 @@ class node:
               self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
+
+  # constructs route tokens
+  def construct_token(self):
+    """
+      Put ID onto queue, then send to neighbors
+      Might have to modify from me queue to look for construction
+    """
+    que_const = deque()
+    que_const.append(self.DHT_ID)
+    self.bprint("This should only have id 6:", que_const)
+    return
 
   # Return id of node
   def who_am_i(self):
