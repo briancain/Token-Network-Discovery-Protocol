@@ -136,9 +136,20 @@ class node:
       self.bprint("Disco Message is after Decrease in Scope:", disco_msg)
 
       if self.am_I_the_dest(disco_msg):
+        """
+          The flood has reached the destination, and will begin
+          sending back to construct tokens here.
+
+          Send message to all of destinations neighbors to start looking at dupes
+        """
         self.bprint("\n\n\n\n\n\n\n\n\n\nDestination Node. You've reached the destination")
         que = deque()
-        self.construct_token(que, self.DHT_ID)
+        que.append(self.DHT_ID)
+        #self.construct_token(que, self.DHT_ID)
+        for n in self.neighbor_list:
+          msg = ["CONSTRUCT", n.DHT_ID, self.DHT_ID, que]
+          self.from_me_queue.put(msg)
+
       else :
         self.bprint("I am not the destination, going to process message")
         # keep track of previous hop, next hop, and sequence num
@@ -176,19 +187,32 @@ class node:
     """
       Must use dupes some how here
     """
+    self.bprint("We are in construct token")
     if self.DHT_ID is 1:
       self.route_queue.append(que)
       self.bprint("We have reached the source, adding token to Queue...", self.route_queue)
     else:
-      for n in self.neighbor_list:
-        if n.DHT_ID == source: # don't construct again from source
-          self.bprint("Don't send construction back to source...continuing on...")
+      #for n in self.neighbor_list:
+      self.bprint("Not the source, trying to send message to keys", self.dups)
+      # this is not evaluating
+      for key in self.dups: #(prev_hop, next_node_id) = True
+        """
+          for keys in dictionary: #(prev_hop, next_node_id) = True
+            send queue to node
+        """
+        self.bprint("Looking at keys:", key)
+        #if n.DHT_ID == source: # don't construct again from source
+        if key[1] is source: # is this needed?
+          self.bprint("Don't send construction back...continuing on...")
+          continue
+        elif self.dups[key] is False:
           continue
         else:
-          self.bprint("Sending route token to neighbors:", n.DHT_ID)
+          self.bprint("Sending route token to neighbors:", key[0])
           que.append(self.DHT_ID)
           self.bprint("Added to queue:", que)
-          msg = ["CONSTRUCT", n.DHT_ID, self.DHT_ID, que]
+          msg = ["CONSTRUCT", key[0], self.DHT_ID, que]
+          self.dups[key] = False
           self.from_me_queue.put(msg)
 
   # Return id of node

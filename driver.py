@@ -72,7 +72,6 @@ def main() :
         dst_id = msg[1]
         src_id = msg[2]
         que = msg[3]
-        # source will be None when nid = 6 is sending message
         msg_send = [msg[0], src_id, que]
         jobs[dst_id][1].put(msg_send)
       else:
