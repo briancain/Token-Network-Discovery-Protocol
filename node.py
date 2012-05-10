@@ -30,12 +30,8 @@ class node:
     # Can only talk to neighbors (Array/List of DHT keys)
     self.neighbor_list = [] # Just an example for now, list with node neighbors
     # Private routing Token -> A queue of token strings which is built after flooding, which will be padded with the null-queue
-    self.routing_table = dict() # a dictionary of Queues, key = dest id
     # Needs to be a hash table (key=DHT ID, value =routing token)
-    self.prev_hops = dict() # hash table indexed by id and route
     self.dups = dict()
-    self.response = dict()
-    # self.msg_coll = collections.namedtuple('msg_coll', 'seqnum scope ibe')
 
     if self.DHT_ID is 1: # could be ==, since they will both be holding the value 6, rather than an instance
       self.scope = 8 # flood depth
@@ -46,6 +42,8 @@ class node:
 
   def __str__(self): return str(self.DHT_ID)
 
+  # special print for node
+  # will print node ID before message to make it clear which process is printing to stdout
   def bprint(self, *args): print "[Node", self, "] ", " ".join([str(x) for x in args])
 
   # Membership & Invitation Authority will initiate flooding technique
@@ -65,18 +63,10 @@ class node:
     for n in self.neighbor_list:
       self.bprint("Sending discovery message:", disco_msg, "to NodeID: ", n.DHT_ID)
       # will process message over network here
-      # n.process_message(disco_msg, self.DHT_ID)
       self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
 
-  def test_fun(self, lst):
-    for n in self.neighbor_list:
-      n.bprint("Here are the tests", lst)
-
-  def who_nodes(self, lst):
-    print "Node Neighbors:"
-    self.bprint(self.neighbor_list)
-
   # runs the node
+  # parses the message from the communication Queues
   def run_node(self, nid, q, q2):
   # def run_node(self, nid):
     self.to_me_queue = q
@@ -96,7 +86,7 @@ class node:
         source = m[1]
         que = m[2]
         self.construct_token(que, source) 
-      else:
+      else: # flooding network
         msg, prev_hop = m
         self.process_message(msg, prev_hop)
 
@@ -113,6 +103,7 @@ class node:
     else:
       return False
 
+  # does the given key exist within dups?
   def is_dups(self, prev_hop, dht_id):
     if (prev_hop, dht_id) in self.dups:
       return True
@@ -126,13 +117,12 @@ class node:
 
     # decrease scope by 1, if 0 drop message
     self.bprint("Node:", self.DHT_ID, " in process message ", "With scope:", disco_msg[1])
-    # debug = raw_input("Continue...")
     if disco_msg[1] < 1:
       self.bprint("Scope is 0, dropping message...")
       exit() # temp fix
       return
     else :
-      # Decrease scope 
+      # Decrease scope and continue on
       disco_msg[1] -= 1
       self.bprint("Disco Message is after Decrease in Scope:", disco_msg)
 
@@ -153,12 +143,12 @@ class node:
 
       else :
         self.bprint("I am not the destination, going to process message")
-        # keep track of previous hop, next hop, and sequence num
-        ###self.prev_hop[disco_msg[0]] = prev_hop # Save this for dupe
-        ###self.next_hops[disco_msg[0]] = self.neighbor_list # next hop = physical neig, dictionary
-        ###sequence_num = disco_msg[0] # should not be a single variable
-        # see if these variables match a previous message within dupe
-        # otherwise don't flood
+        """
+          For each neighbor within the list
+            add duplicate sequence number
+            do not flood disco_msg to node where it came from
+            Otherwise, add prevhop+nexthop into dictionary and continue flooding
+        """
         for n in self.neighbor_list:
           self.bprint("Within process message, looking at neighbor node id:", n.DHT_ID)
           # if not self.dups_seqnums: self.dups_seqnums = dict() # the same thing?
@@ -186,6 +176,9 @@ class node:
   # constructs route tokens
   def construct_token(self, que, source):
     """
+      Constructs tokens after flooding has completed
+      If source, add the queue token to the route_token queue
+      Otherwise, look at each key within dups, and construct token with self.id and send it to dup id
     """
     self.bprint("We are in construct token")
     if self.DHT_ID is 1:
