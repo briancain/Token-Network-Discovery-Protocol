@@ -192,13 +192,13 @@ class node:
             send queue to node
         """
         self.bprint("Looking at keys:", key)
-        #if n.DHT_ID == source: # don't construct again from source
         if key[1] is source: # is this needed or ever reached?
           self.bprint("Don't send construction back...continuing on...")
           continue
         elif self.dups[key] is False:
           continue
         else:
+          # maybe debug here to see what keys are what in dictionary
           self.bprint("Sending route token to neighbors:", key[0])
           que.append(self.DHT_ID)
           self.bprint("Added to queue:", que)
