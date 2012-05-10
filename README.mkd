@@ -4,3 +4,7 @@ CIS 598 Senior Project
 This is the readme for my repo. If you would like more information on this project, please visit the official website for it. There is more information there.
 
 * http://people.cis.ksu.edu/~bccain/cis598.html
+
+If you would like to run this network, it is best when the output is piped to a text file. Try it like this:
+
+    python driver.py > test.txt
