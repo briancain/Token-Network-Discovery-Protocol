@@ -14,6 +14,7 @@ from multiprocessing import Queue
 
 """ Todo:
       * Construct Route Tokens
+      * Check for accuracy
 """
 
 def main():
