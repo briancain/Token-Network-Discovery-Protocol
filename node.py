@@ -167,8 +167,6 @@ class node:
               self.dups[(prev_hop, n.DHT_ID)] = True
               self.bprint("Added dupes to dictionary", self.dups)
               ###ASSUME NEXT_HOP is n??? or vice versa?
-              # intp = raw_input("Continue to next neighbor....")
-              # n.process_message(disco_msg, self.DHT_ID)
               self.from_me_queue.put((n.DHT_ID, self.DHT_ID, disco_msg))
             else:
               self.bprint("Got dupe ", n.DHT_ID, " ", disco_msg, ", not flooding...")
