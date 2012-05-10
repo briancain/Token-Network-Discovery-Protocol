@@ -185,7 +185,6 @@ class node:
   # constructs route tokens
   def construct_token(self, que, source):
     """
-      Must use dupes some how here
     """
     self.bprint("We are in construct token")
     if self.DHT_ID is 1:
@@ -202,7 +201,7 @@ class node:
         """
         self.bprint("Looking at keys:", key)
         #if n.DHT_ID == source: # don't construct again from source
-        if key[1] is source: # is this needed?
+        if key[1] is source: # is this needed or ever reached?
           self.bprint("Don't send construction back...continuing on...")
           continue
         elif self.dups[key] is False:
